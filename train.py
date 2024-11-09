@@ -99,9 +99,9 @@ for dataset_name, dataset in processed_data.items():
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
     num_epochs = epochs
-    lr_patience = 2  
-    best_loss = float('inf')  
-    no_improvement = 0  
+    # lr_patience = 2  
+    # best_loss = float('inf')  
+    # no_improvement = 0  
 
     # ----------------------------------------------- Training process -----------------------------------------------
     for epoch in range(num_epochs):
@@ -132,16 +132,16 @@ for dataset_name, dataset in processed_data.items():
             
             val_loss /= len(val_loader)
 
-        if val_loss < best_loss:
-            best_loss = val_loss
-            no_improvement = 0
-        else:
-            no_improvement += 1
+        # if val_loss < best_loss:
+        #     best_loss = val_loss
+        #     no_improvement = 0
+        # else:
+        #     no_improvement += 1
 
-        if no_improvement >= lr_patience:
-            for param_group in optimizer.param_groups:
-                param_group['lr'] /= 2  
-            no_improvement = 0  
+        # if no_improvement >= lr_patience:
+        #     for param_group in optimizer.param_groups:
+        #         param_group['lr'] /= 2  
+        #     no_improvement = 0  
 
         print(f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_loss:.4f}, Validation Loss: {val_loss:.4f}")
 
