@@ -18,7 +18,7 @@ class GRAPH_MAMBA(nn.Module):
         self.layer_norm = nn.LayerNorm(normalized_shape=configs.node_num)
         self.Flatten = nn.Flatten(start_dim=1)
         
-        self.dropout = nn.Dropout(p=0.1)
+        self.dropout = nn.Dropout(p=0.3)
         self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
 
     def forward(self, input):
