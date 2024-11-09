@@ -6,7 +6,7 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 import warnings
 import matplotlib.pyplot as plt
-from Utils.Loading_data import processed_data
+from Utils.Loading_data import Get_data
 from Utils.Evaluation_metrics import information_coefficient, rank_information_coefficient
 
 warnings.filterwarnings("ignore")
@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore")
 def run_ML_models():
     # Model performance storage
     dataset_results = {}
-
+    processed_data = Get_data('Data')
     for name, data in processed_data.items():
         # Get features and labels
         X_train, y_train = data['X_train'].reshape(data['X_train'].shape[0], -1), data['y_train']

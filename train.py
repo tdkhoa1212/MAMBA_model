@@ -43,11 +43,11 @@ configs = SimpleNamespace(
     ker_size=2,       
     hidden_dimention=32,  # U=32 
     parallel=False,   
-    linear_depth=82*82, 
-    num_nodes=82,      # N=82
-    in_channels=5,    # de=5
-    out_channels=82,   # N=82
-    K=3                # K=3
+    linear_depth=82, 
+    node_num=82,      # N=82
+    embed_dim=10,    # de=10
+    feature_dim=5,   # L=5
+    cheb_k=3         # K=3
 )
 
 batch_size = args.batch_size
