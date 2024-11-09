@@ -21,17 +21,27 @@ def parse_args():
     
     # Arguments for model configurations and training
     parser.add_argument('--weight_path', type=str, default="Weights", help="Path to the model weights")
-    parser.add_argument('--lr', type=float, default=5e-5, help="Learning rate for the optimizer")
-    parser.add_argument('--epochs', type=int, default=1, help="Number of epochs to train the model")
+    parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate for the optimizer")
+    parser.add_argument('--epochs', type=int, default=100, help="Number of epochs to train the model")
     parser.add_argument('--batch_size', type=int, default=128, help="Batch size for training")
     parser.add_argument('--plot_save_path', type=str, default="Results", help="Path to save the testing plot")
     parser.add_argument('--data_path', type=str, default="Data", help="Path to data")
     
     return parser.parse_args()
 
-
 # Parse arguments
 args = parse_args()
+
+# Check for GPU availability and set device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
+
+weight_path = args.weight_path
+lr = args.lr
+epochs = args.epochs
+batch_size = args.batch_size
+plot_save_path = args.plot_save_path
+data_path = args.data_path
 
 # Model configuration
 configs = SimpleNamespace(
@@ -50,26 +60,28 @@ configs = SimpleNamespace(
     cheb_k=3         # K=3
 )
 
-batch_size = args.batch_size
-processed_data = Get_data(args.data_path)
+batch_size = batch_size
+processed_data = Get_data(data_path)
 
 for dataset_name, dataset in processed_data.items():
     print('\n' + '-'*30 + f'{dataset_name}' + '-'*30)
 
     # Initialize the model
     model = GRAPH_MAMBA(configs)
-    # if os.path.exists(f'{args.weight_path}/{dataset_name}.pth'):
-    #     model.load_state_dict(torch.load(f'{args.weight_path}/{dataset_name}.pth'))  
+    model.to(device)  # Move model to the GPU if available
+
+    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
     
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)  # Use learning rate from the arguments
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)  # Use learning rate from the arguments
     criterion = nn.MSELoss()
     
-    x_train = torch.tensor(dataset['X_train'], dtype=torch.float32)
-    y_train = torch.tensor(dataset['y_train'], dtype=torch.float32).unsqueeze(-1)
-    x_test = torch.tensor(dataset['X_test'], dtype=torch.float32)
-    y_test = torch.tensor(dataset['y_test'], dtype=torch.float32)
-    x_val = torch.tensor(dataset['X_val'], dtype=torch.float32)
-    y_val = torch.tensor(dataset['y_val'], dtype=torch.float32)
+    x_train = torch.tensor(dataset['X_train'], dtype=torch.float32).to(device)
+    y_train = torch.tensor(dataset['y_train'], dtype=torch.float32).unsqueeze(-1).to(device)
+    x_test = torch.tensor(dataset['X_test'], dtype=torch.float32).to(device)
+    y_test = torch.tensor(dataset['y_test'], dtype=torch.float32).to(device)
+    x_val = torch.tensor(dataset['X_val'], dtype=torch.float32).to(device)
+    y_val = torch.tensor(dataset['y_val'], dtype=torch.float32).to(device)
 
     print(f"x_train shape: {x_train.shape}")
     print(f"y_train shape: {y_train.shape}")
@@ -86,7 +98,7 @@ for dataset_name, dataset in processed_data.items():
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-    num_epochs = args.epochs
+    num_epochs = epochs
     lr_patience = 2  
     best_loss = float('inf')  
     no_improvement = 0  
@@ -98,6 +110,7 @@ for dataset_name, dataset in processed_data.items():
 
         with tqdm.tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", ncols=100, unit="batch") as train_bar:
             for batch_x, batch_y in train_bar:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)  # Move batch to GPU
                 optimizer.zero_grad()
                 output = model(batch_x)
                 loss = criterion(output, batch_y)
@@ -112,6 +125,7 @@ for dataset_name, dataset in processed_data.items():
         with torch.no_grad():
             val_loss = 0
             for batch_x, batch_y in val_loader:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)  # Move batch to GPU
                 val_output = torch.squeeze(model(batch_x))
                 loss = criterion(val_output, batch_y)
                 val_loss += loss.item()
@@ -131,20 +145,22 @@ for dataset_name, dataset in processed_data.items():
 
         print(f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_loss:.4f}, Validation Loss: {val_loss:.4f}")
 
-        torch.save(model.state_dict(), f'{args.weight_path}/{dataset_name}.pth')
+        torch.save(model.state_dict(), f'{weight_path}/{dataset_name}.pth')
 
     # ----------------------------------------------- Testing process -----------------------------------------------
     model = GRAPH_MAMBA(configs)
-    model.load_state_dict(torch.load(f'{args.weight_path}/{dataset_name}.pth'))
+    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))
+    model.to(device)  # Move model to GPU
     model.eval() 
 
     true_labels = []
     predictions = []
     with torch.no_grad():
         for batch_x, batch_y in test_loader:
+            batch_x, batch_y = batch_x.to(device), batch_y.to(device)  # Move batch to GPU
             batch_output = model(batch_x)  
-            true_labels.append(batch_y.numpy())
-            predictions.append(batch_output.numpy())
+            true_labels.append(batch_y.cpu().numpy())  # Move to CPU for storage
+            predictions.append(batch_output.cpu().numpy())  # Move to CPU for storage
     
     true_labels = np.concatenate(true_labels, axis=0)
     predictions = np.squeeze(np.concatenate(predictions, axis=0))
@@ -159,7 +175,7 @@ for dataset_name, dataset in processed_data.items():
     plt.ylabel('Value')
     plt.legend()
 
-    plt.savefig(f'{args.plot_save_path}/{dataset_name}.png')  # Save plot to the specified path
+    plt.savefig(f'{plot_save_path}/{dataset_name}.png')  # Save plot to the specified path
     plt.close()
 
     test_loss = RMSE(true_labels, predictions)
