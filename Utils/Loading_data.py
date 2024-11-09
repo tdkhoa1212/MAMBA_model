@@ -22,7 +22,7 @@ def Get_data(data_path):
         if 'Name' in data.columns:
             data = data.drop(columns='Name')
 
-        data['return_ratio'] = ((data['Close'].shift(-1) - data['Close']) / data['Close'])*100.
+        data['return_ratio'] = ((data['Close'].shift(-1) - data['Close']) / data['Close'])
         data.dropna(inplace=True)
 
         features = data.drop(columns=['Date', 'return_ratio'])
@@ -32,7 +32,8 @@ def Get_data(data_path):
         window_size = 5
         features_5day = np.array([features[i:i + window_size].values for i in range(len(features) - window_size + 1)])
         features_5day = features_5day.transpose(0, 2, 1)
-        return_ratio_5day = data['return_ratio'].iloc[window_size - 1:].values  # Align labels with windowed data
+
+        return_ratio_5day = data['return_ratio'].iloc[window_size - 1:].values  
 
         #------------------------ Split the data ----------------------
         train_size = int(len(features_5day) * 0.8)

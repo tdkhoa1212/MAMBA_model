@@ -33,17 +33,23 @@ class BidirectionalMambaBlock(nn.Module):
         self.projection_l = nn.Linear(configs.hidden_dimention, configs.seq_len, bias=True)
 
         self.norm = nn.LayerNorm(configs.seq_len, eps=1e-5, elementwise_affine=True)
+        self.dropout = nn.Dropout(p=0.05)
+        self.l2_lambda = 1e-4
         
     def forward(self, x):
         y1, _ = self.mamba(x)  
+        y1 = self.dropout(y1)
 
         x_reversed = x.flip(dims=[1])  
         y2, _ = self.mamba_reversed(x_reversed)
+        y2 = self.dropout(y2)
         
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 
         y_prime = F.relu(self.projection_u(y3))
+        y_prime = self.dropout(y_prime)
         y_prime = self.projection_l(y_prime)  
+        y_prime = self.dropout(y_prime)
         
         out = self.norm(y_prime + y3)
 
