@@ -18,9 +18,7 @@ class GRAPH_MAMBA(nn.Module):
         self.layer_norm = nn.LayerNorm(normalized_shape=configs.node_num)
         self.Flatten = nn.Flatten(start_dim=1)
         
-        self.max_pool = nn.MaxPool1d(kernel_size=2)
-        self.dropout = nn.Dropout(p=0.2)
-        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(p=0.05)
         self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
 
     def forward(self, input):
@@ -28,7 +26,7 @@ class GRAPH_MAMBA(nn.Module):
         for i in range(self.configs.num_layers):
             x1_ = x1
             x1 = self.mamba_block(x1) + x1_
-
+            
         x1 = self.agc_block(x1) 
         x1 = self.layer_norm(x1)
 
