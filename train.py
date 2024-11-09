@@ -143,7 +143,7 @@ for dataset_name, dataset in processed_data.items():
         #         param_group['lr'] /= 2  
         #     no_improvement = 0  
 
-        print(f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_loss:.4f}, Validation Loss: {val_loss:.4f}")
+        print(f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_loss}, Validation Loss: {val_loss}")
 
         torch.save(model.state_dict(), f'{weight_path}/{dataset_name}.pth')
 
