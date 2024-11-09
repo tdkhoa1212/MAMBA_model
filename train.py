@@ -71,7 +71,7 @@ for dataset_name, dataset in processed_data.items():
     model.to(device)  # Move model to the GPU if available
 
     if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
+        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))  
     
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)  # Use learning rate from the arguments
     criterion = nn.MSELoss()
@@ -149,7 +149,7 @@ for dataset_name, dataset in processed_data.items():
 
     # ----------------------------------------------- Testing process -----------------------------------------------
     model = GRAPH_MAMBA(configs)
-    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))
+    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))
     model.to(device)  # Move model to GPU
     model.eval() 
 
