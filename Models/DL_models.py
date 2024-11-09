@@ -24,8 +24,7 @@ class GRAPH_MAMBA(nn.Module):
     def forward(self, input):
         x1=input
         for i in range(self.configs.num_layers):
-            x1_ = x1
-            x1 = self.mamba_block(x1) + x1_
+            x1 = self.mamba_block(x1) 
                     
         x1 = self.agc_block(x1) 
         x1 = self.layer_norm(x1)
