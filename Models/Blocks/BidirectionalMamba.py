@@ -1,5 +1,5 @@
 import torch.nn as nn
-from mamba.mamba.mamba import Mamba, MambaBlock
+from mamba.mamba import Mamba, MambaBlock
 import torch.nn.functional as F
 
 

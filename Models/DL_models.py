@@ -1,9 +1,8 @@
 import torch.nn as nn
-from mamba.mamba.mamba import Mamba
+from mamba.mamba import Mamba
 import torch.nn.functional as F
 from Models.Blocks.BidirectionalMamba import BidirectionalMambaBlock
 from Models.Blocks.AdaptiveGraphConvolution import AdaptiveGraphConvolutionBlock
-import torch
 
 class GRAPH_MAMBA(nn.Module):
     def __init__(self, configs):
