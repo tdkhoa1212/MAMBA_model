@@ -131,7 +131,7 @@ for dataset_name, dataset in processed_data.items():
             val_loss /= len(val_loader)
 
         # Update learning rate based on validation loss
-        scheduler.step(val_loss)
+        scheduler.step(epoch_loss)
 
         print(f"Epoch [{epoch + 1}/{epochs}], Training Loss: {epoch_loss:.2e}, Validation Loss: {val_loss:.2e}")
 
