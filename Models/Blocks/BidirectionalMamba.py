@@ -12,7 +12,7 @@ class BidirectionalMambaBlock(nn.Module):
         self.d_state = configs.d_state
         self.seq_len = configs.seq_len
         self.num_layers = configs.num_layers
-        self.parallel = configs.parallel
+        # self.parallel = configs.parallel
 
         # self.mamba = MambaBlock(
         #     d_input=configs.seq_len,
@@ -33,13 +33,11 @@ class BidirectionalMambaBlock(nn.Module):
         self.mamba = Mamba(
                             d_model=configs.d_model,  # Model dimension d_model
                             d_state=configs.d_state,  # SSM state expansion factor
-                            d_conv=configs.ker_size,  # Local convolution width
                             expand=configs.expand,  # Block expansion factor)
                             )
         self.mamba_reversed = Mamba(
                             d_model=configs.d_model,  # Model dimension d_model
                             d_state=configs.d_state,  # SSM state expansion factor
-                            d_conv=configs.ker_size,  # Local convolution width
                             expand=configs.expand,  # Block expansion factor)
                             )
 

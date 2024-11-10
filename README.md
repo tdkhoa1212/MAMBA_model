@@ -15,12 +15,18 @@ Download the `Data` folder from [here](https://drive.google.com/drive/folders/1O
 
 2. **Install dependencies:**
    ```bash
-   pip install -r requirements.txt
+   !pip install -r requirements.txt
+   !pip install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 --index-url https://download.pytorch.org/whl/cu118
+   !pip install mamba-ssm==1.2.0.post1
    ```
-
-3. **Training:**
+3. **Testing:** 
+   Pre-trained weights are available to test the implemented GRAPH-MAMBA model. Run tests to evaluate its performance, with the test results saved in the `Results` folder.
     ```bash
-    python train.py
+    !python test.py
+    ```
+4. **Training:**
+    ```bash
+    !python train.py
     ```
 
 ## Model Configuration
@@ -53,11 +59,11 @@ python train.py --weight_path Weights --lr 5e-4 --epochs 100 --batch_size 128 --
 | **Dataset** | **Model**               | **RMSE** | **IC**   | **RIC**  | **Parameter Count** |
 |-------------|-------------------------|----------|----------|----------|---------------------|
 | NASDAQ      | SAMBA (Paper)           | 0.0128   | 0.5046   | 0.4767   | 167,178             |
-|             | SAMBA (Implementation)  | 0.0081   | 0.2196   | 0.2627   | 31,189              |
+|             | SAMBA (Implementation)  |    |    |   |             |
 | NYSE        | SAMBA (Paper)           | 0.0125   | 0.5044   | 0.4950   | 167,178             |
-|             | SAMBA (Implementation)  | 0.0093   | -0.069   | -0.0365  | 31,189              |
+|             | SAMBA (Implementation)  |    |    |   |             |
 | DJI         | SAMBA (Paper)           | 0.0108   | 0.4483   | 0.4703   | 167,178             |
-|             | SAMBA (Implementation)  | -0.0545  | -0.0776  | 31,18    | 31,189              |
+|             | SAMBA (Implementation)  |    |    |   |             |
 
 
 

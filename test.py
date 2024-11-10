@@ -1,21 +1,36 @@
 import argparse
 from types import SimpleNamespace
 import torch
-import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from Utils.Loading_data import Get_data
 from Models.DL_models import GRAPH_MAMBA
-import tqdm
 from Utils.Evaluation_metrics import information_coefficient, rank_information_coefficient, RMSE
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from torch.optim.lr_scheduler import ReduceLROnPlateau  # Import scheduler
 import os 
 
-# Ignore warnings
+
 warnings.filterwarnings('ignore', category=UserWarning)
+
+configs = SimpleNamespace(
+    expand=64,        # H=64 
+    pred_len=1,       # Prediction length
+    num_layers=3,     # R=3
+    d_model=5,       # L=5
+    d_state=64,       #  E=64
+    seq_len = 5,      # L=5
+    ker_size=2,   
+
+    hidden_dimention=32,  # U=32 
+    parallel=False,   
+    linear_depth=82, 
+    node_num=82,      # N=82
+    embed_dim=10,     # de=10
+    feature_dim=5,    # L=5
+    cheb_k=3          # K=3
+)
 
 # Define argument parser
 def parse_args():
@@ -45,97 +60,13 @@ batch_size = args.batch_size
 plot_save_path = args.plot_save_path
 data_path = args.data_path
 
-# Model configuration
-configs = SimpleNamespace(
-    expand=64,        # H=64 
-    pred_len=1,       # Prediction length
-    num_layers=3,     # R=3
-    d_model=5,       # L=5
-    d_state=64,       #  E=64
-    seq_len = 5,      # L=5
-
-    hidden_dimention=32,  # U=32 
-    linear_depth=82, 
-    node_num=82,      # N=82
-    embed_dim=10,     # de=10
-    feature_dim=5,    # L=5
-    cheb_k=3          # K=3
-)
-
 processed_data = Get_data(data_path)
 
 for dataset_name, dataset in processed_data.items():
-    print('\n' + '-'*30 + f'{dataset_name}' + '-'*30)
-
-    # Initialize the model
-    model = GRAPH_MAMBA(configs)
-    model.to(device)  # Move model to the GPU if available
-
-    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))  
-    
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
-    # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
-    criterion = nn.MSELoss()
-    # scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)  # Initialize scheduler
-
-    # Prepare data loaders
-    x_train = torch.tensor(dataset['X_train'], dtype=torch.float32).to(device)
-    y_train = torch.tensor(dataset['y_train'], dtype=torch.float32).unsqueeze(-1).to(device)
     x_test = torch.tensor(dataset['X_test'], dtype=torch.float32).to(device)
     y_test = torch.tensor(dataset['y_test'], dtype=torch.float32).to(device)
-    x_val = torch.tensor(dataset['X_val'], dtype=torch.float32).to(device)
-    y_val = torch.tensor(dataset['y_val'], dtype=torch.float32).to(device)
-
-    print(f"x_train shape: {x_train.shape}")
-    print(f"y_train shape: {y_train.shape}")
-    print(f"x_test shape: {x_test.shape}")
-    print(f"y_test shape: {y_test.shape}")
-    print(f"x_val shape: {x_val.shape}")
-    print(f"y_val shape: {y_val.shape}")
-
-    train_dataset = TensorDataset(x_train, y_train)
     test_dataset = TensorDataset(x_test, y_test)
-    val_dataset = TensorDataset(x_val, y_val)
-
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-
-    # Training loop
-    for epoch in range(epochs):
-        model.train()
-        epoch_loss = 0
-
-        with tqdm.tqdm(train_loader, desc=f"Epoch {epoch + 1}/{epochs}", ncols=100, unit="batch") as train_bar:
-            for batch_x, batch_y in train_bar:
-                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
-                optimizer.zero_grad()
-                output = model(batch_x)
-                loss = criterion(output, batch_y)
-                loss.backward()
-                optimizer.step()
-                
-                epoch_loss += loss.item()
-                train_bar.set_postfix(loss=loss.item())
-        
-        # Validation phase
-        model.eval()  
-        val_loss = 0
-        with torch.no_grad():
-            for batch_x, batch_y in val_loader:
-                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
-                val_output = torch.squeeze(model(batch_x))
-                loss = criterion(val_output, batch_y)
-                val_loss += loss.item()
-            val_loss /= len(val_loader)
-
-        # Update learning rate based on validation loss
-        # scheduler.step(val_loss)
-
-        print(f"Epoch [{epoch + 1}/{epochs}], Training Loss: {epoch_loss:.2e}, Validation Loss: {val_loss:.2e}")
-
-        torch.save(model.state_dict(), f'{weight_path}/{dataset_name}.pth')
 
     # Testing process
     model = GRAPH_MAMBA(configs)
@@ -164,6 +95,7 @@ for dataset_name, dataset in processed_data.items():
     plt.ylabel('Value')
     plt.legend()
     plt.savefig(f'{plot_save_path}/{dataset_name}.png')
+    plt.show()
     plt.close()
 
     test_loss = RMSE(true_labels, predictions)
