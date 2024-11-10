@@ -1,7 +1,7 @@
 # MAMBA_model
-'MAMBA MEETS FINANCIAL MARKETS: A GRAPH-MAMBA APPROACH FOR STOCK PRICE PREDICTION' Paper
+MAMBA MEETS FINANCIAL MARKETS: A GRAPH-MAMBA APPROACH FOR STOCK PRICE PREDICTION
 
-
+<strong style="color: red">Note:</strong> The <strong>GRAPH_MAMBA</strong> model, as implemented in this project, is available in the <code>Models.DL_models</code> module. 
 ## Datasets
 
 Download the `Data` folder from [here](https://drive.google.com/drive/folders/1OK8g1Ov-uNpt92S2xVsdZ6vFbvhvZGD_?usp=sharing). Once downloaded, extract the folder, and place the extracted `Data` folder into the `MAMBA_model`. The final path should be `MAMBA_model/Data`.
@@ -53,9 +53,9 @@ python train.py --weight_path Weights --lr 5e-4 --epochs 100 --batch_size 128 --
 | **Dataset** | **Model**               | **RMSE** | **IC**   | **RIC**  | **Parameter Count** |
 |-------------|-------------------------|----------|----------|----------|---------------------|
 | NASDAQ      | SAMBA (Paper)           | 0.0128   | 0.5046   | 0.4767   | 167,178             |
-|             | SAMBA (Implementation)  |          |          |          | 31,189              |
+|             | SAMBA (Implementation)  | 0.0081   | 0.2196   | 0.2627   | 31,189              |
 | NYSE        | SAMBA (Paper)           | 0.0125   | 0.5044   | 0.4950   | 167,178             |
-|             | SAMBA (Implementation)  |          |          |          | 31,189              |
+|             | SAMBA (Implementation)  | 0.0093   | -0.069   | -0.0365  | 31,189              |
 | DJI         | SAMBA (Paper)           | 0.0108   | 0.4483   | 0.4703   | 167,178             |
 |             | SAMBA (Implementation)  |          |          |          | 31,189              |
 

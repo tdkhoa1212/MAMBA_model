@@ -48,10 +48,14 @@ def Get_data(data_path):
         test_labels = np.array(return_ratio_5day[train_size + val_size:])
 
         #------------------------ Normalize features ----------------------
-        scaler = Normalizer()
-        train_features = scaler.fit_transform(train_features.reshape(-1, train_features.shape[-1])).reshape(train_features.shape)
-        val_features = scaler.transform(val_features.reshape(-1, val_features.shape[-1])).reshape(val_features.shape)
-        test_features = scaler.transform(test_features.reshape(-1, test_features.shape[-1])).reshape(test_features.shape)
+        scaler = Normalizer() # Normalizer()
+        # train_features = scaler.fit_transform(train_features.reshape(-1, train_features.shape[-1])).reshape(train_features.shape)
+        # val_features = scaler.transform(val_features.reshape(-1, val_features.shape[-1])).reshape(val_features.shape)
+        # test_features = scaler.transform(test_features.reshape(-1, test_features.shape[-1])).reshape(test_features.shape)
+
+        train_features = scaler.fit_transform(train_features.reshape(train_features.shape[0], train_features.shape[1]*train_features.shape[2])).reshape(train_features.shape)
+        val_features = scaler.transform(val_features.reshape(val_features.shape[0], val_features.shape[1]*val_features.shape[2])).reshape(val_features.shape)
+        test_features = scaler.transform(test_features.reshape(test_features.shape[0], test_features.shape[1]*test_features.shape[2])).reshape(test_features.shape)
 
         #------------------------ Store processed data ----------------------
         processed_data[name] = {
