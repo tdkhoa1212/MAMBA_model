@@ -77,7 +77,7 @@ for dataset_name, dataset in processed_data.items():
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)  # Initialize scheduler
+    # scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)  # Initialize scheduler
 
     # Prepare data loaders
     x_train = torch.tensor(dataset['X_train'], dtype=torch.float32).to(device)
@@ -131,7 +131,7 @@ for dataset_name, dataset in processed_data.items():
             val_loss /= len(val_loader)
 
         # Update learning rate based on validation loss
-        scheduler.step(epoch_loss)
+        # scheduler.step(epoch_loss)
 
         print(f"Epoch [{epoch + 1}/{epochs}], Training Loss: {epoch_loss:.2e}, Validation Loss: {val_loss:.2e}")
 
