@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os 
 import pandas as pd
-
+from torch.optim.lr_scheduler import ReduceLROnPlateau  # Import scheduler
 
 # Ignore warnings
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -48,21 +48,20 @@ data_path = args.data_path
 # Model configuration
 configs = SimpleNamespace(
     seq_len=5,        # Sequence length, L=5
-    pred_len=1,        # Prediction length
-    num_layers=4,      # R=3
+    pred_len=1,       # Prediction length
+    num_layers=3,     # R=3
     d_model=64,       # E=64
-    d_state=64,        # H=64
+    d_state=64,       # H=64
     ker_size=2,       
     hidden_dimention=32,  # U=32 
     parallel=False,   
     linear_depth=82, 
     node_num=82,      # N=82
-    embed_dim=10,    # de=10
-    feature_dim=5,   # L=5
-    cheb_k=3         # K=3
+    embed_dim=10,     # de=10
+    feature_dim=5,    # L=5
+    cheb_k=3          # K=3
 )
 
-batch_size = batch_size
 processed_data = Get_data(data_path)
 
 for dataset_name, dataset in processed_data.items():
@@ -75,9 +74,12 @@ for dataset_name, dataset in processed_data.items():
     if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
         model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))  
     
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)  # Use learning rate from the arguments
+    # optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
+    optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
-    
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)  # Initialize scheduler
+
+    # Prepare data loaders
     x_train = torch.tensor(dataset['X_train'], dtype=torch.float32).to(device)
     y_train = torch.tensor(dataset['y_train'], dtype=torch.float32).unsqueeze(-1).to(device)
     x_test = torch.tensor(dataset['X_test'], dtype=torch.float32).to(device)
@@ -100,19 +102,14 @@ for dataset_name, dataset in processed_data.items():
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-    num_epochs = epochs
-    # lr_patience = 2  
-    # best_loss = float('inf')  
-    # no_improvement = 0  
-
-    # ----------------------------------------------- Training process -----------------------------------------------
-    for epoch in range(num_epochs):
+    # Training loop
+    for epoch in range(epochs):
         model.train()
         epoch_loss = 0
 
-        with tqdm.tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", ncols=100, unit="batch") as train_bar:
+        with tqdm.tqdm(train_loader, desc=f"Epoch {epoch + 1}/{epochs}", ncols=100, unit="batch") as train_bar:
             for batch_x, batch_y in train_bar:
-                batch_x, batch_y = batch_x.to(device), batch_y.to(device)  # Move batch to GPU
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
                 optimizer.zero_grad()
                 output = model(batch_x)
                 loss = criterion(output, batch_y)
@@ -124,60 +121,49 @@ for dataset_name, dataset in processed_data.items():
         
         # Validation phase
         model.eval()  
+        val_loss = 0
         with torch.no_grad():
-            val_loss = 0
             for batch_x, batch_y in val_loader:
-                batch_x, batch_y = batch_x.to(device), batch_y.to(device)  # Move batch to GPU
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
                 val_output = torch.squeeze(model(batch_x))
                 loss = criterion(val_output, batch_y)
                 val_loss += loss.item()
-            
             val_loss /= len(val_loader)
 
-        # if val_loss < best_loss:
-        #     best_loss = val_loss
-        #     no_improvement = 0
-        # else:
-        #     no_improvement += 1
+        # Update learning rate based on validation loss
+        scheduler.step(val_loss)
 
-        # if no_improvement >= lr_patience:
-        #     for param_group in optimizer.param_groups:
-        #         param_group['lr'] /= 2  
-        #     no_improvement = 0  
-
-        print(f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_loss:.2e}, Validation Loss: {val_loss:.2e}")
+        print(f"Epoch [{epoch + 1}/{epochs}], Training Loss: {epoch_loss:.2e}, Validation Loss: {val_loss:.2e}")
 
         torch.save(model.state_dict(), f'{weight_path}/{dataset_name}.pth')
 
-    # ----------------------------------------------- Testing process -----------------------------------------------
+    # Testing process
     model = GRAPH_MAMBA(configs)
     model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))
-    model.to(device)  # Move model to GPU
-    model.eval() 
+    model.to(device)
+    model.eval()
 
     true_labels = []
     predictions = []
     with torch.no_grad():
         for batch_x, batch_y in test_loader:
-            batch_x, batch_y = batch_x.to(device), batch_y.to(device)  # Move batch to GPU
-            batch_output = model(batch_x)  
-            true_labels.append(batch_y.cpu().numpy())  # Move to CPU for storage
-            predictions.append(batch_output.cpu().numpy())  # Move to CPU for storage
+            batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+            batch_output = model(batch_x)
+            true_labels.append(batch_y.cpu().numpy())
+            predictions.append(batch_output.cpu().numpy())
     
     true_labels = np.concatenate(true_labels, axis=0)
     predictions = np.squeeze(np.concatenate(predictions, axis=0))
 
-    # Save testing plot to a specified path
+    # Save testing plot
     plt.figure(figsize=(12, 6))
     plt.plot(true_labels, label='True Labels', color='blue', alpha=0.7)
     plt.plot(predictions, label='Predictions', color='red', alpha=0.7)
-
     plt.title('Model Predictions vs True Labels (Test Data)')
     plt.xlabel('Sample Index')
     plt.ylabel('Value')
     plt.legend()
-
-    plt.savefig(f'{plot_save_path}/{dataset_name}.png')  # Save plot to the specified path
+    plt.savefig(f'{plot_save_path}/{dataset_name}.png')
     plt.close()
 
     test_loss = RMSE(true_labels, predictions)
@@ -187,16 +173,14 @@ for dataset_name, dataset in processed_data.items():
     print(f"IC: {ic_test:.4f}")
     print(f"RIC: {ric_test:.4f}")
 
-    # Save testing results (RMSE, IC, RIC) to an Excel file
+    # Save testing results
     results = {
         'Dataset': [dataset_name],
         'RMSE': [test_loss],
         'IC': [ic_test],
         'RIC': [ric_test]
     }
-
     results_df = pd.DataFrame(results)
     excel_save_path = f'{plot_save_path}/{dataset_name}_results.xlsx'
     results_df.to_excel(excel_save_path, index=False)
-
     print(f"Testing results saved to {excel_save_path}")
