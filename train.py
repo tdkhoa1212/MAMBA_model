@@ -11,6 +11,8 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import os 
+import pandas as pd
+
 
 # Ignore warnings
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -184,3 +186,17 @@ for dataset_name, dataset in processed_data.items():
     print(f"Test Loss (RMSE): {test_loss:.4f}")
     print(f"IC: {ic_test:.4f}")
     print(f"RIC: {ric_test:.4f}")
+
+    # Save testing results (RMSE, IC, RIC) to an Excel file
+    results = {
+        'Dataset': [dataset_name],
+        'RMSE': [test_loss],
+        'IC': [ic_test],
+        'RIC': [ric_test]
+    }
+
+    results_df = pd.DataFrame(results)
+    excel_save_path = f'{plot_save_path}/{dataset_name}_results.xlsx'
+    results_df.to_excel(excel_save_path, index=False)
+
+    print(f"Testing results saved to {excel_save_path}")
