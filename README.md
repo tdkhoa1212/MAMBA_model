@@ -57,7 +57,7 @@ python train.py --weight_path Weights --lr 5e-4 --epochs 100 --batch_size 128 --
 | NYSE        | SAMBA (Paper)           | 0.0125   | 0.5044   | 0.4950   | 167,178             |
 |             | SAMBA (Implementation)  | 0.0093   | -0.069   | -0.0365  | 31,189              |
 | DJI         | SAMBA (Paper)           | 0.0108   | 0.4483   | 0.4703   | 167,178             |
-|             | SAMBA (Implementation)  |          |          |          | 31,189              |
+|             | SAMBA (Implementation)  | -0.0545  | -0.0776  | 31,18    | 31,189              |
 
 
 
