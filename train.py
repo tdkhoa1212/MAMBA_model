@@ -47,11 +47,12 @@ data_path = args.data_path
 
 # Model configuration
 configs = SimpleNamespace(
-    seq_len=5,        # Sequence length, L=5
+    d_conv=5,        # H=64 
     pred_len=1,       # Prediction length
     num_layers=3,     # R=3
-    d_model=5,       # E=64
-    d_state=64,       # H=64
+    d_model=64,       # E=64
+    d_state=5,       
+    seq_len = 5,# L=5
     ker_size=2,       
     hidden_dimention=32,  # U=32 
     parallel=False,   
@@ -131,7 +132,7 @@ for dataset_name, dataset in processed_data.items():
             val_loss /= len(val_loader)
 
         # Update learning rate based on validation loss
-        # scheduler.step(epoch_loss)
+        # scheduler.step(val_loss)
 
         print(f"Epoch [{epoch + 1}/{epochs}], Training Loss: {epoch_loss:.2e}, Validation Loss: {val_loss:.2e}")
 
