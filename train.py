@@ -10,7 +10,6 @@ from Utils.Evaluation_metrics import information_coefficient, rank_information_c
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
-import os 
 import pandas as pd
 from torch.optim.lr_scheduler import ReduceLROnPlateau  # Import scheduler
 
@@ -71,11 +70,11 @@ for dataset_name, dataset in processed_data.items():
     model = GRAPH_MAMBA(configs)
     model.to(device)  # Move model to the GPU if available
 
-    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))  
+    # if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+    #     model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))  
     
-    # optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
+    # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)  # Initialize scheduler
 
