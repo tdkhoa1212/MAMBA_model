@@ -23,7 +23,7 @@ def parse_args():
     
     # Arguments for model configurations and training
     parser.add_argument('--weight_path', type=str, default="Weights", help="Path to the model weights")
-    parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate for the optimizer")
+    parser.add_argument('--lr', type=float, default=5e-4, help="Learning rate for the optimizer")
     parser.add_argument('--epochs', type=int, default=100, help="Number of epochs to train the model")
     parser.add_argument('--batch_size', type=int, default=128, help="Batch size for training")
     parser.add_argument('--plot_save_path', type=str, default="Results", help="Path to save the testing plot")

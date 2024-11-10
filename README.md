@@ -4,7 +4,7 @@
 
 ## Datasets
 
-Download the dataset from [here](https://drive.google.com/drive/folders/1OK8g1Ov-uNpt92S2xVsdZ6vFbvhvZGD_?usp=sharing). After downloading, extract the folder and place the extracted `Data` folder into the `MAMBA_model` directory.
+Download the `Data` folder from [here](https://drive.google.com/drive/folders/1OK8g1Ov-uNpt92S2xVsdZ6vFbvhvZGD_?usp=sharing). Once downloaded, extract the folder, and place the extracted `Data` folder into the `MAMBA_model`. The final path should be `MAMBA_model/Data`.
 
 ## Setup
 
