@@ -34,13 +34,13 @@ class BidirectionalMambaBlock(nn.Module):
                             d_model=configs.d_model,  # Model dimension d_model
                             d_state=configs.d_state,  # SSM state expansion factor
                             d_conv=configs.ker_size,  # Local convolution width
-                            expand=1,  # Block expansion factor)
+                            expand=2,  # Block expansion factor)
                             )
         self.mamba_reversed = Mamba(
                             d_model=configs.d_model,  # Model dimension d_model
                             d_state=configs.d_state,  # SSM state expansion factor
                             d_conv=configs.ker_size,  # Local convolution width
-                            expand=1,  # Block expansion factor)
+                            expand=2,  # Block expansion factor)
                             )
 
         self.projection_u = nn.Linear(configs.seq_len, configs.hidden_dimention, bias=True)
@@ -51,12 +51,10 @@ class BidirectionalMambaBlock(nn.Module):
         self.l2_lambda = 1e-4
         
     def forward(self, x):
-        y1, _ = self.mamba(x)  
-        y1 = self.dropout(y1)
+        y1 = self.mamba(x)  
 
         x_reversed = x.flip(dims=[1])  
-        y2, _ = self.mamba_reversed(x_reversed)
-        y2 = self.dropout(y2)
+        y2 = self.mamba_reversed(x_reversed)
         
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 

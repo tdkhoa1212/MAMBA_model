@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from torch.optim.lr_scheduler import ReduceLROnPlateau  # Import scheduler
+import os 
 
 # Ignore warnings
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -49,7 +50,7 @@ configs = SimpleNamespace(
     seq_len=5,        # Sequence length, L=5
     pred_len=1,       # Prediction length
     num_layers=3,     # R=3
-    d_model=64,       # E=64
+    d_model=5,       # E=64
     d_state=64,       # H=64
     ker_size=2,       
     hidden_dimention=32,  # U=32 
