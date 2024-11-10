@@ -33,14 +33,14 @@ class BidirectionalMambaBlock(nn.Module):
         self.mamba = Mamba(
                             d_model=configs.d_model,  # Model dimension d_model
                             d_state=configs.d_state,  # SSM state expansion factor
-                            d_conv=configs.d_conv,  # Local convolution width
-                            expand=64,  # Block expansion factor)
+                            d_conv=configs.ker_size,  # Local convolution width
+                            expand=configs.expand,  # Block expansion factor)
                             )
         self.mamba_reversed = Mamba(
                             d_model=configs.d_model,  # Model dimension d_model
                             d_state=configs.d_state,  # SSM state expansion factor
-                            d_conv=configs.d_conv,  # Local convolution width
-                            expand=64,  # Block expansion factor)
+                            d_conv=configs.ker_size,  # Local convolution width
+                            expand=configs.expand,  # Block expansion factor)
                             )
 
         self.projection_u = nn.Linear(configs.seq_len, configs.hidden_dimention, bias=True)
@@ -60,7 +60,7 @@ class BidirectionalMambaBlock(nn.Module):
         y_prime = F.relu(self.projection_u(y3))
         y_prime = self.dropout(y_prime)
         y_prime = self.projection_l(y_prime)  
-        # y_prime = self.dropout(y_prime)
+        y_prime = self.dropout(y_prime)
         
         out = self.norm(y_prime + y3)
 
