@@ -54,16 +54,7 @@ python train.py --weight_path <path_to_weights> --lr <learning_rate> --epochs <n
 python train.py --weight_path Weights --lr 5e-4 --epochs 100 --batch_size 128 --plot_save_path Results --data_path Data
 ```
 
-## Results
 
-| **Dataset** | **Model**               | **RMSE** | **IC**   | **RIC**  | **Parameter Count** |
-|-------------|-------------------------|----------|----------|----------|---------------------|
-| NASDAQ      | SAMBA (Paper)           | 0.0128   | 0.5046   | 0.4767   | 167,178             |
-|             | SAMBA (Implementation)  |    |    |   |             |
-| NYSE        | SAMBA (Paper)           | 0.0125   | 0.5044   | 0.4950   | 167,178             |
-|             | SAMBA (Implementation)  |    |    |   |             |
-| DJI         | SAMBA (Paper)           | 0.0108   | 0.4483   | 0.4703   | 167,178             |
-|             | SAMBA (Implementation)  |    |    |   |             |
 
 
 
