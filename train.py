@@ -103,6 +103,16 @@ for dataset_name, dataset in processed_data.items():
 
     # Training loop
     for epoch in range(epochs):
+        if epoch < 500:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 1e-3
+        elif epoch < 1500:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 1e-4
+        else:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 1e-5
+
         model.train()
         epoch_loss = 0
 
