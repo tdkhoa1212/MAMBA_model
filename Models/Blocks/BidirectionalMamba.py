@@ -34,11 +34,13 @@ class BidirectionalMambaBlock(nn.Module):
                             d_model=configs.d_model,  # Model dimension d_model
                             d_state=configs.d_state,  # SSM state expansion factor
                             expand=configs.expand,  # Block expansion factor)
+                            d_conv=1
                             )
         self.mamba_reversed = Mamba(
                             d_model=configs.d_model,  # Model dimension d_model
                             d_state=configs.d_state,  # SSM state expansion factor
                             expand=configs.expand,  # Block expansion factor)
+                            d_conv=1
                             )
 
         self.projection_u = nn.Linear(configs.seq_len, configs.hidden_dimention, bias=True)
