@@ -8,13 +8,12 @@ import torch
 class GRAPH_MAMBA(nn.Module):
     def __init__(self, configs):
         super(GRAPH_MAMBA, self).__init__()
-        self.configs = configs
-
-        self.mamba_block = BidirectionalMambaBlock(configs.pred_len, 
-                                                       configs.d_model, 
-                                                       configs.d_state, 
-                                                       configs.seq_len, 
-                                                       configs.num_layers,
+        self.configs = configs 
+        self.mamba_block = BidirectionalMambaBlock(pred_len=configs.pred_len, 
+                                                       d_model=configs.d_model, 
+                                                       d_state=configs.d_state, 
+                                                       seq_len=configs.seq_len, 
+                                                       num_layers=configs.num_layers,
                                                        expand=configs.expand,
                                                         hidden_dimention=configs.hidden_dimention)
 
@@ -29,10 +28,14 @@ class GRAPH_MAMBA(nn.Module):
         # self.dropout = nn.Dropout(p=0.1)
         self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
 
-    def forward(self, input):
-        x=input
+    def forward(self, input_):
+
+        x=input_
         for i in range(self.configs.num_layers):
             x = self.mamba_block(x) 
+
         x = self.agc_block(x) 
+        x = self.dropout(x)
         x_out = self.projection(x)
+        
         return x_out

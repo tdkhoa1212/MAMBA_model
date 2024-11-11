@@ -69,13 +69,12 @@ for dataset_name, dataset in processed_data.items():
 
     # Initialize the model
     model = GRAPH_MAMBA(configs)
-    model.to(device)  # Move model to the GPU if available
+    model.to(device)  
 
-    # if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-    #     model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
+    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
     
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
-    # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)   # RMSprop
     criterion = nn.MSELoss()
 
     # Prepare data loaders
@@ -110,9 +109,10 @@ for dataset_name, dataset in processed_data.items():
         with tqdm.tqdm(train_loader, desc=f"Epoch {epoch + 1}/{epochs}", ncols=100, unit="batch") as train_bar:
             for batch_x, batch_y in train_bar:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                optimizer.zero_grad() 
                 output = model(batch_x)
                 loss = criterion(output, batch_y)
- 
+                
                 loss.backward()
                 optimizer.step()
                 
