@@ -57,9 +57,9 @@ class BidirectionalMambaBlock(nn.Module):
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 
         y_prime = F.relu(self.projection_u(y3))
-        y_prime = self.dropout(y_prime)
+        # y_prime = self.dropout(y_prime)
         y_prime = self.projection_l(y_prime)  
-        y_prime = self.dropout(y_prime)
+        # y_prime = self.dropout(y_prime)
         
         out = self.norm(y_prime + y3)
 

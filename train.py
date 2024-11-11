@@ -71,8 +71,8 @@ for dataset_name, dataset in processed_data.items():
     model = GRAPH_MAMBA(configs)
     model.to(device)  # Move model to the GPU if available
 
-    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
+    # if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+    #     model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
     
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
@@ -82,13 +82,10 @@ for dataset_name, dataset in processed_data.items():
     # Prepare data loaders
     x_train = torch.tensor(dataset['X_train'], dtype=torch.float32).to(device)
     y_train = torch.tensor(dataset['y_train'], dtype=torch.float32).unsqueeze(-1).to(device)
-    y_train_binary = torch.tensor(dataset['y_train_binary'], dtype=torch.float32).unsqueeze(-1).to(device)
     x_test = torch.tensor(dataset['X_test'], dtype=torch.float32).to(device)
     y_test = torch.tensor(dataset['y_test'], dtype=torch.float32).to(device)
-    y_test_binary = torch.tensor(dataset['y_test_binary'], dtype=torch.float32).to(device)
     x_val = torch.tensor(dataset['X_val'], dtype=torch.float32).to(device)
     y_val = torch.tensor(dataset['y_val'], dtype=torch.float32).to(device)
-    y_val_binary = torch.tensor(dataset['y_val_binary'], dtype=torch.float32).to(device)
 
     print(f"x_train shape: {x_train.shape}")
     print(f"y_train shape: {y_train.shape}")
@@ -97,7 +94,7 @@ for dataset_name, dataset in processed_data.items():
     print(f"x_val shape: {x_val.shape}")
     print(f"y_val shape: {y_val.shape}")
 
-    train_dataset = TensorDataset(x_train, y_train, y_train_binary)
+    train_dataset = TensorDataset(x_train, y_train)
     test_dataset = TensorDataset(x_test, y_test)
     val_dataset = TensorDataset(x_val, y_val)
 
@@ -112,14 +109,12 @@ for dataset_name, dataset in processed_data.items():
         epoch_loss = 0
 
         with tqdm.tqdm(train_loader, desc=f"Epoch {epoch + 1}/{epochs}", ncols=100, unit="batch") as train_bar:
-            for batch_x, batch_y, batch_y_binary in train_bar:
-                batch_x, batch_y, batch_y_binary = batch_x.to(device), batch_y.to(device), batch_y_binary.to(device)
-                optimizer.zero_grad()
-                output, output_binary = model(batch_x)
+            for batch_x, batch_y in train_bar:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                output = model(batch_x)
                 loss = criterion(output, batch_y)
-                loss_binary = criterion_binary(output_binary, batch_y_binary)
-                total_loss = loss + 0.1*loss_binary
-                total_loss.backward()
+ 
+                loss.backward()
                 optimizer.step()
                 
                 epoch_loss += loss.item()
@@ -133,7 +128,7 @@ for dataset_name, dataset in processed_data.items():
         with torch.no_grad():
             for batch_x, batch_y in test_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
-                val_output, _ = model(batch_x)
+                val_output = model(batch_x)
                 loss = criterion(val_output, batch_y)
                 val_loss += loss.item()
                 true_labels_val.append(batch_y.cpu().numpy())

@@ -30,14 +30,9 @@ class GRAPH_MAMBA(nn.Module):
         self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
 
     def forward(self, input):
-
-        x2=input
+        x=input
         for i in range(self.configs.num_layers):
-            x2 = self.mamba_block(x2) 
-
-        embed = self.agc_block(x2) 
-
-        x_out = self.projection(embed)
-        x_out_binary = torch.sigmoid(self.projection(embed))
-        
-        return x_out, x_out_binary
+            x = self.mamba_block(x) 
+        x = self.agc_block(x) 
+        x_out = self.projection(x)
+        return x_out

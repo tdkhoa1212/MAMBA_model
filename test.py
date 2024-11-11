@@ -61,8 +61,8 @@ data_path = args.data_path
 processed_data = Get_data(data_path)
 
 for dataset_name, dataset in processed_data.items():
-    x_test = torch.tensor(dataset['X_test'], dtype=torch.float32).to(device)
-    y_test = torch.tensor(dataset['y_test'], dtype=torch.float32).to(device)
+    x_test = torch.tensor(dataset['X_train'], dtype=torch.float32).to(device)
+    y_test = torch.tensor(dataset['y_train'], dtype=torch.float32).to(device)
     test_dataset = TensorDataset(x_test, y_test)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 

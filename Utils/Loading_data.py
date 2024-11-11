@@ -32,7 +32,6 @@ def Get_data(data_path):
         features_5day = features_5day.transpose(0, 2, 1)
 
         return_ratio_5day = np.array(data['return_ratio'].iloc[window_size - 1:].values)  
-        return_ratio_5day_binary = np.where(return_ratio_5day > 0, 1, 0)
 
         #------------------------ Split the data ----------------------
         train_size = int(len(features_5day) * 0.8)
@@ -46,10 +45,6 @@ def Get_data(data_path):
         val_labels = return_ratio_5day[train_size:train_size + val_size]
         test_labels = return_ratio_5day[train_size + val_size:]
 
-        train_labels_binary = return_ratio_5day_binary[:train_size]
-        val_labels_binary = return_ratio_5day_binary[train_size:train_size + val_size]
-        test_labels_binary = return_ratio_5day_binary[train_size + val_size:]
-
         #------------------------ Normalize features ----------------------
         scaler = Normalizer() 
         train_features = scaler.fit_transform(train_features.reshape(-1, train_features.shape[-1])).reshape(train_features.shape)
@@ -60,13 +55,10 @@ def Get_data(data_path):
         processed_data[name] = {
             'X_train': train_features,
             'y_train': train_labels,
-            'y_train_binary': train_labels_binary,
             'X_val': val_features,
             'y_val': val_labels,
-            'y_val_binary': val_labels_binary,
             'X_test': test_features,
             'y_test': test_labels,
-            'y_test_binary': test_labels_binary
         }
     return processed_data
 
