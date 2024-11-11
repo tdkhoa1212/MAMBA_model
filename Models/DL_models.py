@@ -25,7 +25,7 @@ class GRAPH_MAMBA(nn.Module):
         )
 
         self.l2_lambda = 1e-4
-        # self.dropout = nn.Dropout(p=0.1)
+        self.dropout = nn.Dropout(p=0.1)
         self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
 
     def forward(self, input_):
