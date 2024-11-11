@@ -55,7 +55,7 @@ configs = SimpleNamespace(
     seq_len = 5,      # L=5
 
     hidden_dimention=32,  # U=32
-    linear_depth=82*5, 
+    linear_depth=82, 
     node_num=82,      # N=82
     embed_dim=10,     # de=10
     feature_dim=5,    # L=5

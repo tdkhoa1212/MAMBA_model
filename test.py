@@ -21,10 +21,8 @@ configs = SimpleNamespace(
     d_model=5,       # L=5
     d_state=64,       #  E=64
     seq_len = 5,      # L=5
-    ker_size=2,   
 
-    hidden_dimention=32,  # U=32 
-    parallel=False,   
+    hidden_dimention=32,  # U=32
     linear_depth=82, 
     node_num=82,      # N=82
     embed_dim=10,     # de=10
@@ -70,7 +68,7 @@ for dataset_name, dataset in processed_data.items():
 
     # Testing process
     model = GRAPH_MAMBA(configs)
-    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}_best.pth')) # weights_only=True
+    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}_best_ic.pth')) # weights_only=True
     model.to(device)
     model.eval()
 
