@@ -31,19 +31,24 @@ def Get_data(data_path):
         features_5day = np.array([features[i:i + window_size].values for i in range(len(features) - window_size + 1)])
         features_5day = features_5day.transpose(0, 2, 1)
 
-        return_ratio_5day = data['return_ratio'].iloc[window_size - 1:].values  
+        return_ratio_5day = np.array(data['return_ratio'].iloc[window_size - 1:].values)  
+        return_ratio_5day_binary = np.where(return_ratio_5day > 0, 1, 0)
 
         #------------------------ Split the data ----------------------
         train_size = int(len(features_5day) * 0.8)
         val_size = int(len(features_5day) * 0.05)
 
-        train_features = np.array(features_5day[:train_size])
-        val_features = np.array(features_5day[train_size:train_size + val_size])
-        test_features = np.array(features_5day[train_size + val_size:])
+        train_features = features_5day[:train_size]
+        val_features = features_5day[train_size:train_size + val_size]
+        test_features = features_5day[train_size + val_size:]
 
-        train_labels = np.array(return_ratio_5day[:train_size])
-        val_labels = np.array(return_ratio_5day[train_size:train_size + val_size])
-        test_labels = np.array(return_ratio_5day[train_size + val_size:])
+        train_labels = return_ratio_5day[:train_size]
+        val_labels = return_ratio_5day[train_size:train_size + val_size]
+        test_labels = return_ratio_5day[train_size + val_size:]
+
+        train_labels_binary = return_ratio_5day_binary[:train_size]
+        val_labels_binary = return_ratio_5day_binary[train_size:train_size + val_size]
+        test_labels_binary = return_ratio_5day_binary[train_size + val_size:]
 
         #------------------------ Normalize features ----------------------
         scaler = Normalizer() 
@@ -55,10 +60,13 @@ def Get_data(data_path):
         processed_data[name] = {
             'X_train': train_features,
             'y_train': train_labels,
+            'y_train_binary': train_labels_binary,
             'X_val': val_features,
             'y_val': val_labels,
+            'y_val_binary': val_labels_binary,
             'X_test': test_features,
-            'y_test': test_labels
+            'y_test': test_labels,
+            'y_test_binary': test_labels_binary
         }
     return processed_data
 
@@ -70,28 +78,33 @@ def labels_plotting(processed_data):
         print(f'  X_val shape: {data["X_val"].shape}, y_val shape: {data["y_val"].shape}')
         print(f'  X_test shape: {data["X_test"].shape}, y_test shape: {data["y_test"].shape}')
         
-        plt.figure(figsize=(15, 5))
+        # plt.figure(figsize=(15, 5))
 
-        # Plot y_train
-        plt.subplot(1, 3, 1)
-        plt.hist(data["y_train"], bins=30, alpha=0.7, color='b')
-        plt.title(f'{name} - y_train Distribution')
-        plt.xlabel('Target Value')
-        plt.ylabel('Frequency')
+        # # Plot y_train
+        # plt.subplot(1, 3, 1)
+        # plt.hist(data["y_train"], bins=30, alpha=0.7, color='b')
+        # plt.title(f'{name} - y_train Distribution')
+        # plt.xlabel('Target Value')
+        # plt.ylabel('Frequency')
 
-        # Plot y_val
-        plt.subplot(1, 3, 2)
-        plt.hist(data["y_val"], bins=30, alpha=0.7, color='g')
-        plt.title(f'{name} - y_val Distribution')
-        plt.xlabel('Target Value')
-        plt.ylabel('Frequency')
+        # # Plot y_val
+        # plt.subplot(1, 3, 2)
+        # plt.hist(data["y_val"], bins=30, alpha=0.7, color='g')
+        # plt.title(f'{name} - y_val Distribution')
+        # plt.xlabel('Target Value')
+        # plt.ylabel('Frequency')
 
-        # Plot y_test
-        plt.subplot(1, 3, 3)
-        plt.hist(data["y_test"], bins=30, alpha=0.7, color='r')
-        plt.title(f'{name} - y_test Distribution')
-        plt.xlabel('Target Value')
-        plt.ylabel('Frequency')
+        # # Plot y_test
+        # plt.subplot(1, 3, 3)
+        # plt.hist(data["y_test"], bins=30, alpha=0.7, color='r')
+        # plt.title(f'{name} - y_test Distribution')
+        # plt.xlabel('Target Value')
+        # plt.ylabel('Frequency')
+
+        plt.plot(data['y_train'], label='y train')
+        plt.plot(data['y_test'], label='y test')
+        plt.plot(data['y_val'], label='y val')
+        plt.legend()
 
         # Show the plot
         plt.tight_layout()

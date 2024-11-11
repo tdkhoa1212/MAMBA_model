@@ -68,7 +68,7 @@ for dataset_name, dataset in processed_data.items():
 
     # Testing process
     model = GRAPH_MAMBA(configs)
-    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}_best_ic.pth')) # weights_only=True
+    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth')) # weights_only=True
     model.to(device)
     model.eval()
 
