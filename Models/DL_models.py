@@ -15,8 +15,9 @@ class GRAPH_MAMBA(nn.Module):
             cheb_k=configs.cheb_k, 
             feature_dim=configs.feature_dim
         )
-        self.layer_norm = nn.LayerNorm(normalized_shape=configs.node_num)
+        self.layer_norm = nn.LayerNorm(normalized_shape=configs.linear_depth)
         self.l2_lambda = 1e-4
+        self.flatten = nn.Flatten()
         self.dropout = nn.Dropout(p=0.1)
         self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
 
@@ -25,7 +26,8 @@ class GRAPH_MAMBA(nn.Module):
         for i in range(self.configs.num_layers):
             x1 = self.mamba_block(x1) 
                     
-        x1 = self.agc_block(x1) 
+        # x1 = self.agc_block(x1) 
+        x1 = self.flatten(x1)
         x1 = self.layer_norm(x1)
 
         x = self.projection(x1)

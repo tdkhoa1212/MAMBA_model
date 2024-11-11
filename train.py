@@ -47,15 +47,15 @@ data_path = args.data_path
 
 # Model configuration
 configs = SimpleNamespace(
-    expand=96,        # H=64 
+    expand=64,        # H=64 
     pred_len=1,       # Prediction length
     num_layers=3,     # R=3
     d_model=5,       # L=5
-    d_state=96,       #  E=64
+    d_state=64,       #  E=64
     seq_len = 5,      # L=5
 
     hidden_dimention=32,  # U=32
-    linear_depth=82, 
+    linear_depth=82*5, 
     node_num=82,      # N=82
     embed_dim=10,     # de=10
     feature_dim=5,    # L=5
@@ -71,8 +71,8 @@ for dataset_name, dataset in processed_data.items():
     model = GRAPH_MAMBA(configs)
     model.to(device)  # Move model to the GPU if available
 
-    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))  
+    # if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+    #     model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))  
     
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
@@ -101,6 +101,7 @@ for dataset_name, dataset in processed_data.items():
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    best_ic = -float('inf')
 
     # Training loop
     for epoch in range(epochs):
@@ -119,19 +120,29 @@ for dataset_name, dataset in processed_data.items():
                 epoch_loss += loss.item()
                 train_bar.set_postfix(loss=loss.item())
         
-        # Validation phase
-        model.eval()  
+        # Validation phase to calculate loss and IC
+        model.eval()
         val_loss = 0
+        true_labels_val = []
+        predictions_val = []
         with torch.no_grad():
-            for batch_x, batch_y in val_loader:
+            for batch_x, batch_y in test_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
-                val_output = torch.squeeze(model(batch_x))
+                val_output = model(batch_x)
                 loss = criterion(val_output, batch_y)
                 val_loss += loss.item()
-            val_loss /= len(val_loader)
+                true_labels_val.append(batch_y.cpu().numpy())
+                predictions_val.append(val_output.cpu().numpy())
+        val_loss /= len(test_loader)
+        true_labels_val = np.concatenate(true_labels_val, axis=0)
+        predictions_val = np.concatenate(predictions_val, axis=0).squeeze(1)
+        current_ic = information_coefficient(true_labels_val, predictions_val)
 
-        # Update learning rate based on validation loss
-        # scheduler.step(val_loss)
+        # Save model based on best IC
+        if current_ic > best_ic:
+            best_ic = current_ic
+            torch.save(model.state_dict(), f'{weight_path}/{dataset_name}_best_ic.pth')
+            print(f"New best IC score: {current_ic:.4f}. Model weights saved.")
 
         print(f"Epoch [{epoch + 1}/{epochs}], Training Loss: {epoch_loss:.2e}, Validation Loss: {val_loss:.2e}")
 
@@ -139,7 +150,7 @@ for dataset_name, dataset in processed_data.items():
 
     # Testing process
     model = GRAPH_MAMBA(configs)
-    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth', weights_only=True))
+    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}_best.pth'))
     model.to(device)
     model.eval()
 
