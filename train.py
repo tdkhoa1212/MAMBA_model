@@ -77,7 +77,6 @@ for dataset_name, dataset in processed_data.items():
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
-    criterion_binary = nn.BCEWithLogitsLoss()
 
     # Prepare data loaders
     x_train = torch.tensor(dataset['X_train'], dtype=torch.float32).to(device)
