@@ -71,8 +71,8 @@ for dataset_name, dataset in processed_data.items():
     model = GRAPH_MAMBA(configs)
     model.to(device)  # Move model to the GPU if available
 
-    if os.path.exists(f'{weight_path}/{dataset_name}_best_ic.pth'):
-        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}_best_ic.pth'))  
+    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
     
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)  
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
