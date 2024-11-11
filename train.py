@@ -47,18 +47,18 @@ data_path = args.data_path
 
 # Model configuration
 configs = SimpleNamespace(
-    expand=64,        # H=64 
+    expand=96,        # H=64 
     pred_len=1,       # Prediction length
     num_layers=3,     # R=3
-    d_model=82,       # L=5
-    d_state=64,       #  E=64
-    seq_len = 82,      # L=5
+    d_model=5,       # L=5
+    d_state=96,       #  E=64
+    seq_len = 5,      # L=5
 
-    hidden_dimention=32,  # U=32 
-    linear_depth=5,  # N=82
-    node_num=5,      # N=82
+    hidden_dimention=64,  # U=32
+    linear_depth=82, 
+    node_num=82,      # N=82
     embed_dim=10,     # de=10
-    feature_dim=82,    # L=5
+    feature_dim=5,    # L=5
     cheb_k=3          # K=3
 )
 

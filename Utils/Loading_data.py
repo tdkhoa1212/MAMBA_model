@@ -29,7 +29,7 @@ def Get_data(data_path):
         # Create rolling windows with a window size of 5 (past 4 days + current day)
         window_size = 5
         features_5day = np.array([features[i:i + window_size].values for i in range(len(features) - window_size + 1)])
-        # features_5day = features_5day.transpose(0, 2, 1)
+        features_5day = features_5day.transpose(0, 2, 1)
 
         return_ratio_5day = data['return_ratio'].iloc[window_size - 1:].values  
 

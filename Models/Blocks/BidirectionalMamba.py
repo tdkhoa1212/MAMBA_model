@@ -51,11 +51,9 @@ class BidirectionalMambaBlock(nn.Module):
         
     def forward(self, x):
         y1 = self.mamba(x)  
-        y1 = self.dropout(y1)
-
+    
         x_reversed = x.flip(dims=[1])  
         y2 = self.mamba_reversed(x_reversed)
-        y2 = self.dropout(y2)
         
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 
