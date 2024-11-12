@@ -17,14 +17,14 @@ class BidirectionalMambaBlock(nn.Module):
             d_input=seq_len,
             d_model=d_model,
             d_state=d_state,
-            d_discr=64,
+            # d_discr=64,
         )
         
         self.mamba_reversed = MambaBlock(
             d_input=seq_len,
             d_model=d_model,
             d_state=d_state,
-            d_discr=64,
+            # d_discr=64,
         )
 
         # self.mamba = Mamba(

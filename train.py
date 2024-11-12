@@ -50,7 +50,7 @@ configs = SimpleNamespace(
     expand=12.8,        #  E=64 - expand=E/d_model=12.8
     pred_len=1,       # Prediction length
     num_layers=3,     # R=3
-    d_model=5,       # L=5
+    d_model=64,       # L=5
     d_state=64,       # H=64
     seq_len = 5,      # L=5
 
@@ -72,8 +72,8 @@ for dataset_name, dataset in processed_data.items():
     model = GRAPH_MAMBA(configs)
     model.to(device)  
 
-    # if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-    #     model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
+    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
     
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)   # RMSprop
     criterion = nn.MSELoss()
