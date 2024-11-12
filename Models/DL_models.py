@@ -42,7 +42,7 @@ class GRAPH_MAMBA(nn.Module):
         self.dropout = nn.Dropout(p=0.1)
 
         # GCN Layer: GCNConv layer to apply graph convolutions
-        self.gcn = GCNConv(configs.feature_dim, 1, improved=True, bias=True)
+        # self.gcn = GCNConv(configs.feature_dim, 1, improved=True, bias=True)
 
         # Projection layer: Linear layer for the final prediction
         self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
