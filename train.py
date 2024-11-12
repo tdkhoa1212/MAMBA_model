@@ -72,8 +72,8 @@ for dataset_name, dataset in processed_data.items():
     model = GRAPH_MAMBA(configs)
     model.to(device)  
 
-    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
+    # if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+    #     model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
     
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)   # RMSprop
     criterion = nn.MSELoss()
@@ -121,7 +121,7 @@ for dataset_name, dataset in processed_data.items():
             for batch_x, batch_y in train_bar:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
                 optimizer.zero_grad() 
-                output = model(batch_x)
+                output = model(batch_x).to(device)
                 loss = criterion(output, batch_y)
                 
                 loss.backward()
@@ -135,6 +135,7 @@ for dataset_name, dataset in processed_data.items():
         val_loss = 0
         true_labels_val = []
         predictions_val = []
+
         with torch.no_grad():
             for batch_x, batch_y in val_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)

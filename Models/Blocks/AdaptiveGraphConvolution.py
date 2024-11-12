@@ -15,6 +15,8 @@ class AdaptiveGraphConvolutionBlock(nn.Module):
         
         # Learnable node embedding matrix Ψ (N x de)
         self.node_embeddings = nn.Parameter(torch.FloatTensor(node_num, embed_dim))
+
+        self.psi = torch.nn.Parameter(torch.tensor(1.0))
         
         # Learnable filter weights WFilter (N x (K+1) x L)
         self.WFilter = nn.Parameter(torch.FloatTensor(node_num, cheb_k + 1, feature_dim))
@@ -32,7 +34,7 @@ class AdaptiveGraphConvolutionBlock(nn.Module):
         dist_matrix = torch.matmul(self.node_embeddings, self.node_embeddings.transpose(0, 1))  # N x N
         pairwise_distance = torch.diag(dist_matrix)[:, None] + torch.diag(dist_matrix)[None, :] - 2 * dist_matrix
         D = torch.exp(-self.scaling_factor * pairwise_distance)
-        adjacency_matrix = F.softmax(D, dim=1)  # Ag
+        adjacency_matrix = F.softmax(self.psi*D, dim=1)  # Ag
 
         # Step 2: Compute Chebyshev polynomials of the adjacency matrix
         supports = [torch.eye(self.node_num).to(adjacency_matrix.device), adjacency_matrix]
