@@ -47,11 +47,11 @@ data_path = args.data_path
 
 # Model configuration
 configs = SimpleNamespace(
-    expand=64,        # H=64 
+    expand=12.8,        #  E=64 - expand=E/d_model=12.8
     pred_len=1,       # Prediction length
-    num_layers=5,     # R=3
+    num_layers=3,     # R=3
     d_model=5,       # L=5
-    d_state=64,       #  E=64
+    d_state=64,       # H=64
     seq_len = 5,      # L=5
 
     hidden_dimention=32,  # U=32
@@ -61,6 +61,7 @@ configs = SimpleNamespace(
     feature_dim=5,    # L=5
     cheb_k=3          # K=3
 )
+
 
 processed_data = Get_data(data_path)
 
@@ -106,12 +107,12 @@ for dataset_name, dataset in processed_data.items():
         # if epoch < 500:
         #     for param_group in optimizer.param_groups:
         #         param_group['lr'] = 1e-3
-        # elif epoch < 1500:
+        # elif epoch < 1000:
         #     for param_group in optimizer.param_groups:
-        #         param_group['lr'] = 1e-4
+        #         param_group['lr'] = 5e-4
         # else:
         #     for param_group in optimizer.param_groups:
-        #         param_group['lr'] = 1e-5
+        #         param_group['lr'] = 1e-4
 
         model.train()
         epoch_loss = 0
