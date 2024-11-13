@@ -27,35 +27,39 @@ class BidirectionalMambaBlock(nn.Module):
 
         self.mamba = Mamba(  
                             d_model=d_model,  # Model dimension d_model
-                            # d_state=d_state,  # SSM state expansion factor
-                            # expand=d_inner/d_model,  # Block expansion factor)
-                            # d_conv=2
+                            d_state=d_state,  # SSM state expansion factor
+                            # expand=4,
+                            d_conv=3
                             )
         self.mamba_reversed = Mamba(
                             d_model=d_model,  # Model dimension d_model
-                            # d_state=d_state,  # SSM state expansion factor
-                            # expand=d_inner/d_model,  # Block expansion factor)
-                            # d_conv=2
+                            d_state=d_state,  # SSM state expansion factor
+                            # expand=4,
+                            d_conv=3
                             )
 
         self.projection_u = nn.Linear(seq_len, hidden_dimention, bias=True)
         self.projection_l = nn.Linear(hidden_dimention, seq_len, bias=True)
         self.l2_lambda = 1e-4
-        self.norm = nn.LayerNorm(seq_len, eps=1e-5, elementwise_affine=True)
+        self.norm = nn.LayerNorm(d_model, eps=1e-5, elementwise_affine=True)
         self.dropout = nn.Dropout(p=0.1)
         
     def forward(self, x):
         y1 = self.mamba(x)  
+        y1 = self.dropout(y1)
     
         x_reversed = x.flip(dims=[1])  
         y2 = self.mamba_reversed(x_reversed)
+        y2 = self.dropout(y2)
         
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 
-        y_prime = F.relu(self.projection_u(y3))
-        # y_prime = self.dropout(y_prime)
+        y3_reshaped = y3.view(-1, self.d_model, self.seq_len)
+        y_prime = F.relu(self.projection_u(y3_reshaped))
+        y_prime = self.dropout(y_prime)
         y_prime = self.projection_l(y_prime)  
-        # y_prime = self.dropout(y_prime)
+        y_prime = self.dropout(y_prime)
+        y_prime = y_prime.view(-1, self.seq_len, self.d_model)
         
         out = self.norm(y_prime + y3)
 

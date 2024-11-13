@@ -96,6 +96,6 @@ class GRAPH_MAMBA(nn.Module):
         x = self.dropout(x)
         
         # Final projection to the prediction length (pred_len)
-        x_out = torch.tanh(self.projection(x))
+        x_out = self.projection(x)
         
         return x_out
