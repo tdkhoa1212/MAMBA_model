@@ -9,7 +9,7 @@ def Get_data(data_path):
     datasets = {
         # 'NASDAQ': pd.read_csv(f"{data_path}/Processed_NASDAQ.csv", parse_dates=['Date']),
         'NYSE': pd.read_csv(f"{data_path}/Processed_NYSE.csv", parse_dates=['Date']),
-        'DJI': pd.read_csv(f"{data_path}/Processed_DJI.csv", parse_dates=['Date']),
+        # 'DJI': pd.read_csv(f"{data_path}/Processed_DJI.csv", parse_dates=['Date']),
     }
 
     #------------------------ Process each dataset individually ----------------------
