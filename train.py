@@ -75,7 +75,7 @@ for dataset_name, dataset in processed_data.items():
     if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
         model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
     
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)   # RMSprop
+    optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)   # RMSprop
     criterion = nn.MSELoss()
 
     # Prepare data loaders
