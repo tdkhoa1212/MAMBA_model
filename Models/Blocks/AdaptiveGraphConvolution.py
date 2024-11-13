@@ -50,7 +50,6 @@ class AdaptiveGraphConvolutionBlock(nn.Module):
         for k in range(self.cheb_k + 1):
             # Multiply supports[k] with self.WFilter[:, k, :] (filter weights)
             support_filter_product = torch.matmul(supports[k], self.WFilter[:, k, :])  # N x L
-            print(support_filter_product.shape, x.shape)
             
             # Now, multiply this product with the input features x (B x N x L)
             # Using einsum for efficient batch matrix multiplication

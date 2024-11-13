@@ -1,6 +1,6 @@
 import torch.nn as nn
-from mamba.mamba import Mamba, MambaBlock
-# from mamba_ssm import Mamba
+# from mamba.mamba import Mamba, MambaBlock
+from mamba_ssm import Mamba
 import torch.nn.functional as F
 
 
@@ -13,30 +13,30 @@ class BidirectionalMambaBlock(nn.Module):
         self.seq_len = seq_len
         self.num_layers = num_layers
 
-        self.mamba = MambaBlock(
-            d_input=seq_len,
-            d_model=d_model,
-            d_state=d_state,
-        )
+        # self.mamba = MambaBlock(
+        #     d_input=seq_len,
+        #     d_model=d_model,
+        #     d_state=d_state,
+        # )
         
-        self.mamba_reversed = MambaBlock(
-            d_input=seq_len,
-            d_model=d_model,
-            d_state=d_state,
-        )
+        # self.mamba_reversed = MambaBlock(
+        #     d_input=seq_len,
+        #     d_model=d_model,
+        #     d_state=d_state,
+        # )
 
-        # self.mamba = Mamba(
-        #                     d_model=d_model,  # Model dimension d_model
-        #                     d_state=d_state,  # SSM state expansion factor
-        #                     expand=expand,  # Block expansion factor)
-        #                     d_conv=2
-        #                     )
-        # self.mamba_reversed = Mamba(
-        #                     d_model=d_model,  # Model dimension d_model
-        #                     d_state=d_state,  # SSM state expansion factor
-        #                     expand=expand,  # Block expansion factor)
-        #                     d_conv=2
-        #                     )
+        self.mamba = Mamba(
+                            d_model=d_model,  # Model dimension d_model
+                            d_state=d_state,  # SSM state expansion factor
+                            expand=expand,  # Block expansion factor)
+                            d_conv=2
+                            )
+        self.mamba_reversed = Mamba(
+                            d_model=d_model,  # Model dimension d_model
+                            d_state=d_state,  # SSM state expansion factor
+                            expand=expand,  # Block expansion factor)
+                            d_conv=2
+                            )
 
         self.projection_u = nn.Linear(seq_len, hidden_dimention, bias=True)
         self.projection_l = nn.Linear(hidden_dimention, seq_len, bias=True)
