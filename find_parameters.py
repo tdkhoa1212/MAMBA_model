@@ -46,8 +46,7 @@ plot_save_path = args.plot_save_path
 data_path = args.data_path
 
 # Search over `expand` and `d_state` using itertools
-expand_values = [1, 2, 3]
-hidden_dimention_values = [16, 32, 64, 128]
+num_layers_values = [3, 5, 7, 9, 11]
 
 processed_data = Get_data(data_path)
 
@@ -57,23 +56,24 @@ for dataset_name, dataset in processed_data.items():
     best_expand, best_hidden_dimention = None, None
 
     # Iterate over all combinations of expand and d_state
-    for expand, hidden_dimention in itertools.product(expand_values, hidden_dimention_values):
-        print(f"Training with expand={expand}, hidden_dimention={hidden_dimention}")
+    for num_layers in num_layers_values:
+        print(f"Training with num_layers={num_layers}")
 
         # Model configuration
         configs = SimpleNamespace(
-            expand=expand,
-            pred_len=1,
-            num_layers=3,
-            d_model=82,
-            d_state=64,
-            seq_len=5,
-            hidden_dimention=hidden_dimention,
-            linear_depth=82,
-            node_num=82,
-            embed_dim=10,
-            feature_dim=5,
-            cheb_k=3
+            expand=6,        #  E=64 - expand=E/d_model=12.8
+            pred_len=1,       # Prediction length
+            num_layers=num_layers,     # R=7
+            d_model=15,       # N=82
+            d_state=128,       # H=164
+            seq_len = 15,      # L=5
+
+            hidden_dimention=128,  # U=32
+            linear_depth=15,   # N=82    
+            node_num=15,      # N=82
+            embed_dim=15,     # de=10
+            feature_dim=5,    # L=5
+            cheb_k=3          # K=3
         )
 
         # Load data
@@ -90,6 +90,7 @@ for dataset_name, dataset in processed_data.items():
 
         # Initialize model, optimizer, and criterion
         model = GRAPH_MAMBA(configs).to(device)
+        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth')) 
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
         criterion = nn.MSELoss()
 
@@ -130,9 +131,9 @@ for dataset_name, dataset in processed_data.items():
             # Save the best model based on IC
             if current_ic > best_ic:
                 best_ic = current_ic
-                best_expand, best_hidden_dimention = expand, hidden_dimention
-                torch.save(model.state_dict(), f'{weight_path}/{dataset_name}_best.pth')
-                print(f"New best IC score: {current_ic:.4f} with expand={expand}, hidden_dimention={hidden_dimention}. Model weights saved.")
+                best_num_layers = num_layers
+                torch.save(model.state_dict(), f'{weight_path}/{dataset_name}_{num_layers}.pth')
+                print(f"New best IC score: {current_ic:.4f} with num_layers={num_layers}. Model weights saved.")
 
             model.eval()
 
@@ -152,11 +153,11 @@ for dataset_name, dataset in processed_data.items():
         plt.figure(figsize=(12, 6))
         plt.plot(true_labels, label='True Labels', color='blue', alpha=0.7)
         plt.plot(predictions, label='Predictions', color='red', alpha=0.7)
-        plt.title(f'expand={expand}, hidden_dimention={hidden_dimention}')
+        plt.title(f'num_layers={num_layers}')
         plt.xlabel('Sample Index')
         plt.ylabel('Value')
         plt.legend()
-        plt.savefig(f'{plot_save_path}/expand={expand} hidden_dimention={hidden_dimention}.png')
+        plt.savefig(f'{plot_save_path}/num_layers={num_layers}.png')
         plt.close()
 
 

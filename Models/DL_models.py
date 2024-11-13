@@ -48,11 +48,6 @@ class GRAPH_MAMBA(nn.Module):
         self.flatten = nn.Flatten()
         self.norm = nn.LayerNorm(configs.linear_depth)
 
-        self.activation = F.relu
-        d_ff = configs.d_model*5
-        self.conv1 = nn.Conv1d(in_channels=configs.d_model, out_channels=d_ff, kernel_size=1)
-        self.conv2 = nn.Conv1d(in_channels=d_ff, out_channels=configs.d_model, kernel_size=1)
-
     def forward(self, input_):
         """
         Forward pass through the model:

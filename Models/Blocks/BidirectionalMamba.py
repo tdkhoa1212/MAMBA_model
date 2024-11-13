@@ -28,14 +28,14 @@ class BidirectionalMambaBlock(nn.Module):
         self.mamba = Mamba(  
                             d_model=d_model,  # Model dimension d_model
                             d_state=d_state,  # SSM state expansion factor
-                            expand=2,
-                            d_conv=1
+                            expand=4,
+                            d_conv=2
                             )
         self.mamba_reversed = Mamba(
                             d_model=d_model,  # Model dimension d_model
                             d_state=d_state,  # SSM state expansion factor
-                            expand=2,
-                            d_conv=1
+                            expand=4,
+                            d_conv=2
                             )
 
         self.projection_u = nn.Linear(seq_len, hidden_dimention, bias=True)
@@ -45,7 +45,7 @@ class BidirectionalMambaBlock(nn.Module):
         self.dropout = nn.Dropout(p=0.1)
         self.activation = F.relu
 
-        d_ff = d_model*4
+        d_ff = 128
         self.conv1 = nn.Conv1d(in_channels=d_model, out_channels=d_ff, kernel_size=1)
         self.conv2 = nn.Conv1d(in_channels=d_ff, out_channels=d_model, kernel_size=1)
         
