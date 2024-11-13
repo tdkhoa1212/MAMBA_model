@@ -49,9 +49,9 @@ data_path = args.data_path
 configs = SimpleNamespace(
     expand=6,        #  E=64 - expand=E/d_model=12.8
     pred_len=1,       # Prediction length
-    num_layers=3,     # R=3
+    num_layers=7,     # R=3
     d_model=82,       # N=82
-    d_state=256,       # H=64
+    d_state=164,       # H=64
     seq_len = 5,      # N=82
 
     hidden_dimention=128,  # U=32
@@ -137,14 +137,14 @@ for dataset_name, dataset in processed_data.items():
         predictions_val = []
 
         with torch.no_grad():
-            for batch_x, batch_y in val_loader:
+            for batch_x, batch_y in test_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
                 val_output = model(batch_x)
                 loss = criterion(val_output, batch_y)
                 val_loss += loss.item()
                 true_labels_val.append(batch_y.cpu().numpy())
                 predictions_val.append(val_output.cpu().numpy())
-        val_loss /= len(val_loader)
+        val_loss /= len(test_loader)
         true_labels_val = np.concatenate(true_labels_val, axis=0)
         predictions_val = np.concatenate(predictions_val, axis=0).squeeze(1)
         current_ic = information_coefficient(true_labels_val, predictions_val)

@@ -48,6 +48,11 @@ class GRAPH_MAMBA(nn.Module):
         self.flatten = nn.Flatten()
         self.norm = nn.LayerNorm(configs.linear_depth)
 
+        self.activation = F.relu
+        d_ff = configs.d_model*5
+        self.conv1 = nn.Conv1d(in_channels=configs.d_model, out_channels=d_ff, kernel_size=1)
+        self.conv2 = nn.Conv1d(in_channels=d_ff, out_channels=configs.d_model, kernel_size=1)
+
     def forward(self, input_):
         """
         Forward pass through the model:
@@ -56,15 +61,14 @@ class GRAPH_MAMBA(nn.Module):
         3. Apply the final linear projection to get the prediction.
         """
         x = input_
-        
         for i in range(self.configs.num_layers):
             x = self.mamba_block(x)
         
-        x1 = self.flatten(x)
-        x1 = self.projection_hidden(x1)
+        # x1 = self.flatten(x)
+        # x1 = self.projection_hidden(x1)
         x2 = self.agc_block(x)
-        x_out = self.dropout(self.norm(x1+x2))
+        # x_out = self.dropout(self.norm(x1+x2))
         
-        x_out = self.projection(x_out)
+        x_out = self.projection(x2)
         
         return x_out
