@@ -43,6 +43,10 @@ class BidirectionalMambaBlock(nn.Module):
         self.l2_lambda = 1e-4
         self.norm = nn.LayerNorm(d_model, eps=1e-5, elementwise_affine=True)
         self.dropout = nn.Dropout(p=0.1)
+
+        d_ff = d_model*4
+        self.conv1 = nn.Conv1d(in_channels=d_model, out_channels=d_ff, kernel_size=1)
+        self.conv2 = nn.Conv1d(in_channels=d_ff, out_channels=d_model, kernel_size=1)
         
     def forward(self, x):
         y1 = self.mamba(x)  
@@ -54,12 +58,15 @@ class BidirectionalMambaBlock(nn.Module):
         
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 
-        y3_reshaped = y3.view(-1, self.d_model, self.seq_len)
-        y_prime = F.relu(self.projection_u(y3_reshaped))
-        y_prime = self.dropout(y_prime)
-        y_prime = self.projection_l(y_prime)  
-        y_prime = self.dropout(y_prime)
-        y_prime = y_prime.view(-1, self.seq_len, self.d_model)
+        # y3_reshaped = y3.view(-1, self.d_model, self.seq_len)
+        # y_prime = F.relu(self.projection_u(y3_reshaped))
+        # y_prime = self.dropout(y_prime)
+        # y_prime = self.projection_l(y_prime)  
+        # y_prime = self.dropout(y_prime)
+        # y_prime = y_prime.view(-1, self.seq_len, self.d_model)
+
+        y_prime = self.dropout(self.activation(self.conv1(y3.transpose(-1, 1))))
+        y_prime = self.dropout(self.conv2(y_prime).transpose(-1, 1))
         
         out = self.norm(y_prime + y3)
 
