@@ -18,7 +18,7 @@ class GRAPH_MAMBA(nn.Module):
             d_state=configs.d_state, 
             seq_len=configs.seq_len, 
             num_layers=configs.num_layers,
-            d_inner=configs.d_inner,
+            expand=configs.expand,
             hidden_dimention=configs.hidden_dimention
         )
 

@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 
 class BidirectionalMambaBlock(nn.Module):
-    def __init__(self, pred_len, d_model, d_state, seq_len, num_layers, d_inner, hidden_dimention):
+    def __init__(self, pred_len, d_model, d_state, seq_len, num_layers, expand, hidden_dimention):
         super(BidirectionalMambaBlock, self).__init__()
         self.pred_len = pred_len
         self.d_model = d_model
