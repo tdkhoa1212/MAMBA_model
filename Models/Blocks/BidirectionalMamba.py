@@ -17,14 +17,12 @@ class BidirectionalMambaBlock(nn.Module):
             d_input=seq_len,
             d_model=d_model,
             d_state=d_state,
-            # d_discr=64,
         )
         
         self.mamba_reversed = MambaBlock(
             d_input=seq_len,
             d_model=d_model,
             d_state=d_state,
-            # d_discr=64,
         )
 
         # self.mamba = Mamba(
@@ -47,10 +45,10 @@ class BidirectionalMambaBlock(nn.Module):
         self.dropout = nn.Dropout(p=0.1)
         
     def forward(self, x):
-        y1, _ = self.mamba(x)  
+        y1 = self.mamba(x)  
     
         x_reversed = x.flip(dims=[1])  
-        y2, _ = self.mamba_reversed(x_reversed)
+        y2 = self.mamba_reversed(x_reversed)
         
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 
