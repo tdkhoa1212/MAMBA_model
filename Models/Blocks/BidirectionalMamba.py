@@ -43,6 +43,7 @@ class BidirectionalMambaBlock(nn.Module):
         self.l2_lambda = 1e-4
         self.norm = nn.LayerNorm(d_model, eps=1e-5, elementwise_affine=True)
         self.dropout = nn.Dropout(p=0.1)
+        self.activation = F.gelu
 
         d_ff = d_model*4
         self.conv1 = nn.Conv1d(in_channels=d_model, out_channels=d_ff, kernel_size=1)

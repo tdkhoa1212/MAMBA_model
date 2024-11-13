@@ -45,7 +45,7 @@ class GRAPH_MAMBA(nn.Module):
         # self.gcn = GCNConv(configs.feature_dim, 1, improved=True, bias=True)
 
         # Projection layer: Linear layer for the final prediction
-        self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
+        self.projection = nn.Linear(configs.linear_depth*5, configs.pred_len, bias=True)
 
         # Learnable scaling factor for Gaussian kernel in the adaptive graph construction
         self.psi = torch.nn.Parameter(torch.tensor(1.0))  # ψ is initialized as learnable scaler
@@ -88,9 +88,9 @@ class GRAPH_MAMBA(nn.Module):
         # x = self.gcn(x, self.edge_index.to(device))
         
         # # Flatten the output to prepare for the final prediction layer
-        # x = self.flatten(x)
+        x = self.flatten(x)
 
-        x = self.agc_block(x)
+        # x = self.agc_block(x)
         
         # Apply dropout regularization
         x = self.dropout(x)
