@@ -47,14 +47,14 @@ data_path = args.data_path
 
 # Model configuration
 configs = SimpleNamespace(
-    expand=2,        #  E=64 - expand=E/d_model=12.8
+    expand=6,        #  E=64 - expand=E/d_model=12.8
     pred_len=1,       # Prediction length
-    num_layers=4,     # R=3
+    num_layers=3,     # R=3
     d_model=82,       # N=82
-    d_state=2,       # H=64
+    d_state=256,       # H=64
     seq_len = 5,      # N=82
 
-    hidden_dimention=32,  # U=32
+    hidden_dimention=128,  # U=32
     linear_depth=82, 
     node_num=82,      # N=82
     embed_dim=10,     # de=10
@@ -72,8 +72,8 @@ for dataset_name, dataset in processed_data.items():
     model = GRAPH_MAMBA(configs)
     model.to(device)  
 
-    # if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
-    #     model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
+    if os.path.exists(f'{weight_path}/{dataset_name}.pth'):
+        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth'))  
     
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)   # RMSprop
     criterion = nn.MSELoss()

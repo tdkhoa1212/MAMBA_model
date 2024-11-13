@@ -46,8 +46,8 @@ plot_save_path = args.plot_save_path
 data_path = args.data_path
 
 # Search over `expand` and `d_state` using itertools
-expand_values = [4, 6, 8]
-hidden_dimention_values = [16, 64, 128, 256]
+expand_values = [1, 2, 3]
+hidden_dimention_values = [16, 32, 64, 128]
 
 processed_data = Get_data(data_path)
 
@@ -66,7 +66,7 @@ for dataset_name, dataset in processed_data.items():
             pred_len=1,
             num_layers=3,
             d_model=82,
-            d_state=128,
+            d_state=64,
             seq_len=5,
             hidden_dimention=hidden_dimention,
             linear_depth=82,
