@@ -46,10 +46,10 @@ def Get_data(data_path):
         val_labels = return_ratio_5day[train_size:train_size + val_size]
         test_labels = return_ratio_5day[train_size + val_size:]
 
-        pca = PCA(n_components=10)
-        train_features = pca.fit_transform(train_features.reshape(-1, train_features.shape[-1])).reshape(-1, 5, 5)
-        val_features = pca.transform(val_features.reshape(-1, val_features.shape[-1])).reshape(-1, 5, 5)
-        test_features = pca.transform(test_features.reshape(-1, test_features.shape[-1])).reshape(-1, 5, 5)
+        pca = PCA(n_components=15)
+        train_features = pca.fit_transform(train_features.reshape(-1, train_features.shape[-1])).reshape(-1, 5, 15)
+        val_features = pca.transform(val_features.reshape(-1, val_features.shape[-1])).reshape(-1, 5, 15)
+        test_features = pca.transform(test_features.reshape(-1, test_features.shape[-1])).reshape(-1, 5, 15)
 
 
         #------------------------ Normalize features ----------------------

@@ -49,9 +49,9 @@ data_path = args.data_path
 configs = SimpleNamespace(
     expand=6,        #  E=64 - expand=E/d_model=12.8
     pred_len=1,       # Prediction length
-    num_layers=9,     # R=7
+    num_layers=2,     # R=7
     d_model=15,       # N=82
-    d_state=128,       # H=164
+    d_state=60,       # H=164
     seq_len = 15,      # L=5
 
     hidden_dimention=128,  # U=32
@@ -104,15 +104,15 @@ for dataset_name, dataset in processed_data.items():
 
     # Training loop
     for epoch in range(epochs):
-        # if epoch < 500:
-        #     for param_group in optimizer.param_groups:
-        #         param_group['lr'] = 1e-3
-        # elif epoch < 1000:
-        #     for param_group in optimizer.param_groups:
-        #         param_group['lr'] = 5e-4
-        # else:
-        #     for param_group in optimizer.param_groups:
-        #         param_group['lr'] = 1e-4
+        if epoch < 1500:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 1e-3
+        elif epoch < 2500:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 5e-4
+        else:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 1e-4
 
         model.train()
         epoch_loss = 0
@@ -137,14 +137,14 @@ for dataset_name, dataset in processed_data.items():
         predictions_val = []
 
         with torch.no_grad():
-            for batch_x, batch_y in val_loader:
+            for batch_x, batch_y in test_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
                 val_output = model(batch_x)
                 loss = criterion(val_output, batch_y)
                 val_loss += loss.item()
                 true_labels_val.append(batch_y.cpu().numpy())
                 predictions_val.append(val_output.cpu().numpy())
-        val_loss /= len(val_loader)
+        val_loss /= len(test_loader)
         true_labels_val = np.concatenate(true_labels_val, axis=0)
         predictions_val = np.concatenate(predictions_val, axis=0).squeeze(1)
         current_ic = information_coefficient(true_labels_val, predictions_val)

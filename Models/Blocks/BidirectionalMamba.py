@@ -45,7 +45,7 @@ class BidirectionalMambaBlock(nn.Module):
         self.dropout = nn.Dropout(p=0.1)
         self.activation = F.relu
 
-        d_ff = 128
+        d_ff = d_model*4
         self.conv1 = nn.Conv1d(in_channels=d_model, out_channels=d_ff, kernel_size=1)
         self.conv2 = nn.Conv1d(in_channels=d_ff, out_channels=d_model, kernel_size=1)
         
