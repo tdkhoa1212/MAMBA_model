@@ -47,11 +47,11 @@ data_path = args.data_path
 
 # Model configuration
 configs = SimpleNamespace(
-    expand=8,        #  
+    expand=6,        #  
     pred_len=1,       # Prediction length
-    num_layers=2,     # R
+    num_layers=3,     # R
     d_model=15,       # N=82
-    d_state=8*15,       # H
+    d_state=6*15,       # H
     seq_len = 15,      # L=5
 
     hidden_dimention=128,  # U

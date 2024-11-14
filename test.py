@@ -14,13 +14,12 @@ import os
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
-# Model configuration
 configs = SimpleNamespace(
-    expand=8,        #  
+    expand=6,        #  
     pred_len=1,       # Prediction length
-    num_layers=2,     # R
+    num_layers=3,     # R
     d_model=15,       # N=82
-    d_state=8*15,       # H
+    d_state=6*15,       # H
     seq_len = 15,      # L=5
 
     hidden_dimention=128,  # U
@@ -69,7 +68,7 @@ for dataset_name, dataset in processed_data.items():
 
     # Testing process
     model = GRAPH_MAMBA(configs)
-    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth')) # weights_only=True
+    model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}_best.pth')) # weights_only=True
     model.to(device)
     model.eval()
 
@@ -86,14 +85,33 @@ for dataset_name, dataset in processed_data.items():
     predictions = np.squeeze(np.concatenate(predictions, axis=0))
 
     # Save testing plot
-    plt.figure(figsize=(12, 6))
-    plt.plot(true_labels, label='True Labels', color='blue', alpha=0.7)
-    plt.plot(predictions, label='Predictions', color='red', alpha=0.7)
-    plt.title('Model Predictions vs True Labels (Test Data)')
-    plt.xlabel('Sample Index')
-    plt.ylabel('Value')
-    plt.legend()
-    plt.savefig(f'{plot_save_path}/{dataset_name}.png')
+    # plt.figure(figsize=(12, 6))
+    # plt.plot(true_labels, label='True Labels', color='blue', alpha=0.7)
+    # plt.plot(predictions, label='Predictions', color='red', alpha=0.7)
+    # plt.title('Model Predictions vs True Labels (Test Data)')
+    # plt.xlabel('Sample Index')
+    # plt.ylabel('Value')
+    # plt.legend()
+    # plt.savefig(f'{plot_save_path}/{dataset_name}.png')
+    # plt.show()
+    # plt.close()
+
+    plt.figure(figsize=(14, 7))
+    
+    plt.plot(true_labels, label='True Return Ratio', color='navy', linewidth=2, alpha=0.8)
+    plt.plot(predictions, label='Predicted Return Ratio', color='crimson', linestyle='--', linewidth=2, alpha=0.8)
+    
+    plt.title(f'Model Predictions vs True Labels - {dataset_name}', fontsize=16, fontweight='bold', color='darkslategray')
+    plt.xlabel('Sample Index', fontsize=14)
+    plt.ylabel('Return Ratio', fontsize=14)
+    
+    plt.grid(color='gray', linestyle=':', linewidth=0.5, alpha=0.7)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    
+    plt.legend(loc='upper left', fontsize=12, frameon=True, fancybox=True, shadow=True, framealpha=0.9)
+    
+    plt.savefig(f'{plot_save_path}/{dataset_name}.png', dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
 
