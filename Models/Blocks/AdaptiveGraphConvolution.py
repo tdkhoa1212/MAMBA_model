@@ -23,19 +23,16 @@ class AdaptiveGraphConvolutionBlock(nn.Module):
         # Learnable bias bFilter (N)
         self.bFilter = nn.Parameter(torch.FloatTensor(node_num))
         
-        # Initialize node embeddings and filter weights
         nn.init.kaiming_uniform_(self.node_embeddings, mode='fan_in', nonlinearity='relu')
         nn.init.kaiming_uniform_(self.WFilter, mode='fan_in', nonlinearity='relu')
         nn.init.constant_(self.bFilter, 0.01) 
 
     def forward(self, x):
-        # Step 1: Build the adaptive graph using Gaussian kernel
         dist_matrix = torch.matmul(self.node_embeddings, self.node_embeddings.transpose(0, 1))  # N x N
         pairwise_distance = torch.diag(dist_matrix)[:, None] + torch.diag(dist_matrix)[None, :] - 2 * dist_matrix
         D = torch.exp(-self.scaling_factor * pairwise_distance)
         adjacency_matrix = F.softmax(self.psi*D, dim=1)  # Ag
 
-        # Step 2: Compute Chebyshev polynomials of the adjacency matrix
         supports = [torch.eye(self.node_num).to(adjacency_matrix.device), adjacency_matrix]
         for k in range(2, self.cheb_k + 1):
             supports.append(2 * torch.matmul(adjacency_matrix, supports[-1]) - supports[-2])
@@ -43,8 +40,6 @@ class AdaptiveGraphConvolutionBlock(nn.Module):
         # Stack supports as (K+1) x N x N
         supports = torch.stack(supports, dim=0)  # (K+1) x N x N
 
-        # Step 3: Compute the output using matrix multiplication between supports, self.WFilter, and x
-        # Initialize output tensor with shape [batch_size, node_num]
         output = torch.zeros(x.shape[0], self.node_num).to(x.device)
         
         for k in range(self.cheb_k + 1):
@@ -52,11 +47,9 @@ class AdaptiveGraphConvolutionBlock(nn.Module):
             support_filter_product = torch.matmul(supports[k], self.WFilter[:, k, :])  # N x L
             
             # Now, multiply this product with the input features x (B x N x L)
-            # Using einsum for efficient batch matrix multiplication
             output += torch.einsum('bnl,ln->bl', x, support_filter_product)
 
-        # Step 4: Add the bias term and match the output shape to bFilter (which has shape N)
-        output = output + self.bFilter  # Add bias to each node
+        output = output + self.bFilter  
 
         return output
 
