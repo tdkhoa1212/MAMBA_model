@@ -1,10 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-# from torch_geometric.nn import GCNConv
 from Models.Blocks.BidirectionalMamba import BidirectionalMambaBlock
 from Models.Blocks.AdaptiveGraphConvolution import AdaptiveGraphConvolutionBlock
-# from torch_geometric.typing import torch_cluster
 
 class GRAPH_MAMBA(nn.Module):
     def __init__(self, configs):
@@ -15,7 +13,6 @@ class GRAPH_MAMBA(nn.Module):
             pred_len=configs.pred_len, 
             d_model=configs.d_model, 
             d_state=configs.d_state, 
-            seq_len=configs.seq_len, 
             expand=configs.expand,
             hidden_dimention=configs.hidden_dimention
         )
@@ -26,6 +23,7 @@ class GRAPH_MAMBA(nn.Module):
             cheb_k=configs.cheb_k, 
             feature_dim=configs.feature_dim,
         )
+
 
         # Regularization parameters
         self.l2_lambda = 1e-4
@@ -44,8 +42,8 @@ class GRAPH_MAMBA(nn.Module):
         for i in range(self.configs.num_layers):
             x = self.mamba_block(x)
         
-        x = self.agc_block(x)
-        x = self.dropout(x)
-        x_out = self.projection(x)
+        x2 = self.agc_block(x)
+        x2 = self.dropout(x2)
+        x_out = self.projection(x2)
         
         return x_out

@@ -5,12 +5,11 @@ import torch.nn.functional as F
 
 
 class BidirectionalMambaBlock(nn.Module):
-    def __init__(self, pred_len, d_model, d_state, seq_len, expand, hidden_dimention):
+    def __init__(self, pred_len, d_model, d_state, expand, hidden_dimention):
         super(BidirectionalMambaBlock, self).__init__()
         self.pred_len = pred_len
         self.d_model = d_model
         self.d_state = d_state
-        self.seq_len = seq_len
 
         self.mamba = Mamba(  
                             d_model=d_model,  # Model dimension d_model
@@ -45,7 +44,7 @@ class BidirectionalMambaBlock(nn.Module):
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 
         y_prime = self.dropout(self.activation(self.conv1(y3.transpose(-1, 1))))
-        y_prime = self.dropout(self.activation(self.conv3(y_prime)))
+        y_prime = self.dropout(self.activation(self.conv2(y_prime)))
         y_prime = self.dropout(self.conv3(y_prime).transpose(-1, 1))
         
         out = self.norm(y_prime + y3)

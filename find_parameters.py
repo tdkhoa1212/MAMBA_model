@@ -66,12 +66,11 @@ for dataset_name, dataset in processed_data.items():
             num_layers=6,     # R
             d_model=15,       # N=82
             d_state=64,       # H
-            seq_len = 15,      # L=5
 
             hidden_dimention=hidden_dimention,  # U
             linear_depth=15,   # N=82    
             node_num=15,      # N=82
-            embed_dim=30,     # de
+            embed_dim=10,     # de
             feature_dim=5,    # L=5
             cheb_k=3          # K
         )
