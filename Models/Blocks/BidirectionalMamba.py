@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 
 class BidirectionalMambaBlock(nn.Module):
-    def __init__(self, pred_len, d_model, d_state, expand, hidden_dimention):
+    def __init__(self, pred_len, d_model, d_state, expand, hidden_dimention, d_conv):
         super(BidirectionalMambaBlock, self).__init__()
         self.pred_len = pred_len
         self.d_model = d_model
@@ -15,13 +15,13 @@ class BidirectionalMambaBlock(nn.Module):
                             d_model=d_model,  # Model dimension d_model
                             d_state=d_state,  # SSM state expansion factor
                             expand=expand,
-                            d_conv=2
+                            d_conv=d_conv
                             )
         self.mamba_reversed = Mamba(
                             d_model=d_model,  # Model dimension d_model
                             d_state=d_state,  # SSM state expansion factor
                             expand=expand,
-                            d_conv=2
+                            d_conv=d_conv
                             )
 
         self.l2_lambda = 1e-4

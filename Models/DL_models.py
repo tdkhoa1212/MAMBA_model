@@ -16,7 +16,8 @@ class GRAPH_MAMBA(nn.Module):
             d_model=configs.d_model, 
             d_state=configs.d_state, 
             expand=configs.expand,
-            hidden_dimention=configs.hidden_dimention
+            hidden_dimention=configs.hidden_dimention,
+            d_conv=configs.d_conv
         )
 
         self.agc_block = AdaptiveGraphConvolutionBlock(
@@ -24,6 +25,7 @@ class GRAPH_MAMBA(nn.Module):
             embed_dim=configs.embed_dim, 
             cheb_k=configs.cheb_k, 
             feature_dim=configs.feature_dim,
+            d_conv=configs.d_conv
         )
 
 

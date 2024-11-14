@@ -46,9 +46,10 @@ plot_save_path = args.plot_save_path
 data_path = args.data_path
 
 configs = SimpleNamespace(
+    d_conv=2,
     expand=1,        #                            - 
     pred_len=1,       # Prediction length
-    num_layers=3,     # R
+    num_layers=8,     # R
     d_model=15,       # N=82
     d_state=256,       # H                        - 
 

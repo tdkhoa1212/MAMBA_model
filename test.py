@@ -16,9 +16,10 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 # Model configuration
 configs = SimpleNamespace(
+    d_conv=2,
     expand=1,        #                            - 
     pred_len=1,       # Prediction length
-    num_layers=3,     # R
+    num_layers=8,     # R
     d_model=15,       # N=82
     d_state=256,       # H                        - 
 
@@ -29,7 +30,6 @@ configs = SimpleNamespace(
     feature_dim=5,    # L=5
     cheb_k=3          # K
 )
-
 # Define argument parser
 def parse_args():
     parser = argparse.ArgumentParser(description="Training and testing the GRAPH_MAMBA model.")
