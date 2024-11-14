@@ -30,7 +30,7 @@ class BidirectionalMambaBlock(nn.Module):
         self.activation = F.relu
 
         self.conv1 = nn.Conv1d(in_channels=d_model, out_channels=hidden_dimention, kernel_size=1)
-        self.conv2 = nn.Conv1d(in_channels=hidden_dimention, out_channels=hidden_dimention, kernel_size=1)
+        # self.conv2 = nn.Conv1d(in_channels=hidden_dimention, out_channels=hidden_dimention, kernel_size=1)
         self.conv3 = nn.Conv1d(in_channels=hidden_dimention, out_channels=d_model, kernel_size=1)
 
     def forward(self, x):
@@ -44,7 +44,7 @@ class BidirectionalMambaBlock(nn.Module):
         y3 = self.norm(x + y1 + y2.flip(dims=[1]))
 
         y_prime = self.dropout(self.activation(self.conv1(y3.transpose(-1, 1))))
-        y_prime = self.dropout(self.activation(self.conv2(y_prime)))
+        # y_prime = self.dropout(self.activation(self.conv2(y_prime)))
         y_prime = self.dropout(self.conv3(y_prime).transpose(-1, 1))
         
         out = self.norm(y_prime + y3)

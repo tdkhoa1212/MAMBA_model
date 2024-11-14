@@ -16,21 +16,19 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 # Model configuration
 configs = SimpleNamespace(
-    expand=1,        #  
+    expand=1,        #                            - 
     pred_len=1,       # Prediction length
-    num_layers=6,     # R
+    num_layers=3,     # R
     d_model=15,       # N=82
-    d_state=15,       # H
-    seq_len = 15,      # L=5
+    d_state=256,       # H                        - 
 
-    hidden_dimention=128,  # U
-    linear_depth=15,   # N=82    
+    hidden_dimention=256,  # U                    - 
+    linear_depth=30,   # N=82    
     node_num=15,      # N=82
-    embed_dim=30,     # de
+    embed_dim=10,     # de
     feature_dim=5,    # L=5
     cheb_k=3          # K
 )
-
 
 # Define argument parser
 def parse_args():

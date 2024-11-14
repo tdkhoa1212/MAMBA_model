@@ -46,20 +46,19 @@ plot_save_path = args.plot_save_path
 data_path = args.data_path
 
 configs = SimpleNamespace(
-    expand=4,        #  
+    expand=1,        #                            - 
     pred_len=1,       # Prediction length
-    num_layers=6,     # R
+    num_layers=3,     # R
     d_model=15,       # N=82
-    d_state=64,       # H
+    d_state=256,       # H                        - 
 
-    hidden_dimention=128,  # U
-    linear_depth=15,   # N=82    
+    hidden_dimention=256,  # U                    - 
+    linear_depth=30,   # N=82    
     node_num=15,      # N=82
     embed_dim=10,     # de
     feature_dim=5,    # L=5
     cheb_k=3          # K
 )
-
 processed_data = Get_data(data_path)
 
 for dataset_name, dataset in processed_data.items():
