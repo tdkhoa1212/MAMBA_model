@@ -137,14 +137,14 @@ for dataset_name, dataset in processed_data.items():
         predictions_val = []
 
         with torch.no_grad():
-            for batch_x, batch_y in test_loader:
+            for batch_x, batch_y in val_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
                 val_output = model(batch_x)
                 loss = criterion(val_output, batch_y)
                 val_loss += loss.item()
                 true_labels_val.append(batch_y.cpu().numpy())
                 predictions_val.append(val_output.cpu().numpy())
-        val_loss /= len(test_loader)
+        val_loss /= len(val_loader)
         true_labels_val = np.concatenate(true_labels_val, axis=0)
         predictions_val = np.concatenate(predictions_val, axis=0).squeeze(1)
         current_ic = information_coefficient(true_labels_val, predictions_val)
