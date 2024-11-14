@@ -49,7 +49,7 @@ data_path = args.data_path
 configs = SimpleNamespace(
     expand=6,        #  E=64 - expand=E/d_model=12.8
     pred_len=1,       # Prediction length
-    num_layers=8,     # R=7
+    num_layers=9,     # R=7
     d_model=15,       # N=82
     d_state=128,       # H=164
     seq_len = 15,      # L=5
