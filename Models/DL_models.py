@@ -16,8 +16,8 @@ class GRAPH_MAMBA(nn.Module):
             d_model=configs.d_model, 
             d_state=configs.d_state, 
             seq_len=configs.seq_len, 
-            num_layers=configs.num_layers,
             expand=configs.expand,
+            hidden_dimention=configs.hidden_dimention
         )
 
         self.agc_block = AdaptiveGraphConvolutionBlock(
@@ -27,16 +27,9 @@ class GRAPH_MAMBA(nn.Module):
             feature_dim=configs.feature_dim,
         )
 
-        self.agc_block = AdaptiveGraphConvolutionBlock(
-            node_num=configs.node_num, 
-            embed_dim=configs.embed_dim, 
-            feature_dim=configs.feature_dim,
-            cheb_k=configs.cheb_k
-        )
-
         # Regularization parameters
         self.l2_lambda = 1e-4
-        self.dropout = nn.Dropout(p=0.1)
+        self.dropout = nn.Dropout(p=0.2)
 
         self.projection = nn.Linear(configs.linear_depth, configs.pred_len, bias=True)
 
@@ -51,8 +44,8 @@ class GRAPH_MAMBA(nn.Module):
         for i in range(self.configs.num_layers):
             x = self.mamba_block(x)
         
-        x2 = self.agc_block(x)
-        
-        x_out = self.projection(x2)
+        x = self.agc_block(x)
+        x = self.dropout(x)
+        x_out = self.projection(x)
         
         return x_out

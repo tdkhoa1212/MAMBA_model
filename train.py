@@ -45,23 +45,21 @@ batch_size = args.batch_size
 plot_save_path = args.plot_save_path
 data_path = args.data_path
 
-# Model configuration
 configs = SimpleNamespace(
-    expand=6,        #  
+    expand=4,        #  
     pred_len=1,       # Prediction length
-    num_layers=3,     # R
+    num_layers=6,     # R
     d_model=15,       # N=82
-    d_state=6*15,       # H
+    d_state=64,       # H
     seq_len = 15,      # L=5
 
     hidden_dimention=128,  # U
     linear_depth=15,   # N=82    
     node_num=15,      # N=82
-    embed_dim=15,     # de
+    embed_dim=10,     # de
     feature_dim=5,    # L=5
     cheb_k=3          # K
 )
-
 
 processed_data = Get_data(data_path)
 
@@ -178,14 +176,23 @@ for dataset_name, dataset in processed_data.items():
     predictions = np.squeeze(np.concatenate(predictions, axis=0))
 
     # Save testing plot
-    plt.figure(figsize=(12, 6))
-    plt.plot(true_labels, label='True Labels', color='blue', alpha=0.7)
-    plt.plot(predictions, label='Predictions', color='red', alpha=0.7)
-    plt.title('Model Predictions vs True Labels (Test Data)')
-    plt.xlabel('Sample Index')
-    plt.ylabel('Value')
-    plt.legend()
-    plt.savefig(f'{plot_save_path}/{dataset_name}.png')
+    plt.figure(figsize=(14, 7))
+    
+    plt.plot(true_labels, label='True Return Ratio', color='navy', linewidth=2, alpha=0.8)
+    plt.plot(predictions, label='Predicted Return Ratio', color='crimson', linestyle='--', linewidth=2, alpha=0.8)
+    
+    plt.title(f'Model Predictions vs True Labels - {dataset_name}', fontsize=16, fontweight='bold', color='darkslategray')
+    plt.xlabel('Sample Index', fontsize=14)
+    plt.ylabel('Return Ratio', fontsize=14)
+    
+    plt.grid(color='gray', linestyle=':', linewidth=0.5, alpha=0.7)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    
+    plt.legend(loc='upper left', fontsize=12, frameon=True, fancybox=True, shadow=True, framealpha=0.9)
+    
+    plt.savefig(f'{plot_save_path}/{dataset_name}.png', dpi=300, bbox_inches='tight')
+    plt.show()
     plt.close()
 
     test_loss = RMSE(true_labels, predictions)
