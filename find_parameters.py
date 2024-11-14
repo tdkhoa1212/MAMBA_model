@@ -46,7 +46,7 @@ plot_save_path = args.plot_save_path
 data_path = args.data_path
 
 # Search over `expand` and `d_state` using itertools
-num_layers_values = [3, 5, 7, 9, 11]
+num_layers_values = [5, 7, 9, 11, 13]
 
 processed_data = Get_data(data_path)
 
