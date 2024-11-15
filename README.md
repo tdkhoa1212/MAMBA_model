@@ -62,10 +62,11 @@ python train.py --weight_path Weights --lr 5e-4 --epochs 100 --batch_size 128 --
 |-------------|--------------------------------------------|------------|----------|-----------|-------------------|
 | NASDAQ      | SAMBA (Paper, Graph-Mamba)                 | 0.0128     | 0.5046   | 0.4767    | 167,178           |
 |             | SAMBA (Implementation, Conv-Graph-Mamba)   | 0.0096     | 0.2355   | 0.1781    | 34,113            |
-| NYSE        | SAMBA (Paper, Graph-Mamba)                 | 0.0125     | 0.5044   | 0.4950    | 167,178           |
-|             | SAMBA (Implementation, Conv-Graph-Mamba)   |  0.0066    | 0.0904   | 0.1214    | 34,113            |
 | DJI         | SAMBA (Paper, Graph-Mamba)                 | 0.0108     | 0.4483   | 0.4703    | 167,178           |
 |             | SAMBA (Implementation, Conv-Graph-Mamba)   | 0.0073     | 0.2156   | 0.2257    | 34,113            |
+| NYSE        | SAMBA (Paper, Graph-Mamba)                 | 0.0125     | 0.5044   | 0.4950    | 167,178           |
+|             | SAMBA (Implementation, Conv-Graph-Mamba)   |  0.0066    | 0.0904   | 0.1214    | 34,113            |
+
 
 
 
