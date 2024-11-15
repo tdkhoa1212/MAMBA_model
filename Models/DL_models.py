@@ -25,7 +25,6 @@ class GRAPH_MAMBA(nn.Module):
             embed_dim=configs.embed_dim, 
             cheb_k=configs.cheb_k, 
             feature_dim=configs.feature_dim,
-            d_conv=configs.d_conv
         )
 
 

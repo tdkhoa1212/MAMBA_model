@@ -16,7 +16,7 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 configs = SimpleNamespace(
     d_conv=2,
-    expand=3,        #                            - 
+    expand=1,        #                            - 
     pred_len=1,       # Prediction length
     num_layers=8,     # R
     d_model=15,       # N=82
