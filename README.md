@@ -1,7 +1,8 @@
 # MAMBA_model
-MAMBA MEETS FINANCIAL MARKETS: A GRAPH-MAMBA APPROACH FOR STOCK PRICE PREDICTION
+![Description of PDF](./Images/conv-mamba.png)
 
-<strong style="color: red">Note:</strong> The <strong>GRAPH_MAMBA</strong> model, as implemented in this project, is available in the <code>Models.DL_models</code> module. 
+The <strong>Improved GRAPH-MAMBA</strong> model above is in <code>Models.DL_models.GRAPH_MAMBA</code>. 
+
 ## Datasets
 
 Download the `Data` folder from [here](https://drive.google.com/drive/folders/1OK8g1Ov-uNpt92S2xVsdZ6vFbvhvZGD_?usp=sharing). Once downloaded, extract the folder, and place the extracted `Data` folder into the `MAMBA_model`. The final path should be `MAMBA_model/Data`.
@@ -53,6 +54,18 @@ python train.py --weight_path <path_to_weights> --lr <learning_rate> --epochs <n
 ```bash
 python train.py --weight_path Weights --lr 5e-4 --epochs 100 --batch_size 128 --plot_save_path Results --data_path Data
 ```
+
+## Experimental Results
+### Performance and Parameter Comparison: Graph-Mamba Model (Published Paper) vs. Conv-Graph-Mamba Model (Current Implementation)
+
+| **Dataset** | **Model**                                   | **RMSE ↓** | **IC ↑** | **RIC ↑** | **# Parameters** |
+|-------------|--------------------------------------------|------------|----------|-----------|-------------------|
+| NASDAQ      | SAMBA (Paper, Graph-Mamba)                 | 0.0128     | 0.5046   | 0.4767    | 167,178           |
+|             | SAMBA (Implementation, Conv-Graph-Mamba)   | 0.0096     | 0.2355   | 0.1781    | 34,113            |
+| NYSE        | SAMBA (Paper, Graph-Mamba)                 | 0.0125     | 0.5044   | 0.4950    | 167,178           |
+|             | SAMBA (Implementation, Conv-Graph-Mamba)   |  0.0066    | 0.0904   | 0.1214    | 34,113            |
+| DJI         | SAMBA (Paper, Graph-Mamba)                 | 0.0108     | 0.4483   | 0.4703    | 167,178           |
+|             | SAMBA (Implementation, Conv-Graph-Mamba)   | 0.0073     | 0.2156   | 0.2257    | 34,113            |
 
 
 
