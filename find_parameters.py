@@ -46,36 +46,35 @@ plot_save_path = args.plot_save_path
 data_path = args.data_path
 
 # Search over `expand` and `d_state` using itertools
-hidden_dimention_values = list(range(256, 1025, 256))
+expand_values = range(1, 20, 2)
 
 processed_data = Get_data(data_path)
 
 for dataset_name, dataset in processed_data.items():
     print('\n' + '-' * 30 + f'{dataset_name}' + '-' * 30)
     best_ic = -float('inf')
-    best_hidden_dimention= None
+    best_expand= None
 
     # Iterate over all combinations of expand and d_state
-    for hidden_dimention in hidden_dimention_values:
-        print(f"Training with hidden_dimention={hidden_dimention}")
+    for expand in expand_values:
+        print(f"Training with expand={expand}")
 
         # Model configuration
         configs = SimpleNamespace(
             d_conv=2,
-            expand=1,        #                            - 
+            expand=expand,        #                            - 
             pred_len=1,       # Prediction length
             num_layers=8,     # R
             d_model=15,       # N=82
             d_state=256,       # H                        - 
 
-            hidden_dimention=hidden_dimention,  # U                    - 
+            hidden_dimention=256,  # U                    - 
             linear_depth=30,   # N=82    
             node_num=15,      # N=82
             embed_dim=10,     # de
             feature_dim=5,    # L=5
             cheb_k=3          # K
         )
-
 
         # Load data
         x_train = torch.tensor(dataset['X_train'], dtype=torch.float32).to(device)
@@ -91,7 +90,7 @@ for dataset_name, dataset in processed_data.items():
 
         # Initialize model, optimizer, and criterion
         model = GRAPH_MAMBA(configs).to(device)
-        model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth')) 
+        # model.load_state_dict(torch.load(f'{weight_path}/{dataset_name}.pth')) 
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
         criterion = nn.MSELoss()
 
@@ -132,9 +131,9 @@ for dataset_name, dataset in processed_data.items():
             # Save the best model based on IC
             if current_ic > best_ic:
                 best_ic = current_ic
-                best_hidden_dimention = hidden_dimention
-                torch.save(model.state_dict(), f'{weight_path}/{dataset_name}_{hidden_dimention}.pth')
-                print(f"New best IC score: {current_ic:.4f} with hidden_dimention={hidden_dimention}. Model weights saved.")
+                best_expand = expand
+                torch.save(model.state_dict(), f'{weight_path}/{dataset_name}_{expand}.pth')
+                print(f"New best IC score: {current_ic:.4f} with expand={expand}. Model weights saved.")
 
         model.eval()
         true_labels = []
@@ -153,11 +152,11 @@ for dataset_name, dataset in processed_data.items():
         plt.figure(figsize=(12, 6))
         plt.plot(true_labels, label='True Labels', color='blue', alpha=0.7)
         plt.plot(predictions, label='Predictions', color='red', alpha=0.7)
-        plt.title(f'hidden_dimention={hidden_dimention}')
+        plt.title(f'expand={expand}')
         plt.xlabel('Sample Index')
         plt.ylabel('Value')
         plt.legend()
-        plt.savefig(f'{plot_save_path}/hidden_dimention={hidden_dimention}.png')
+        plt.savefig(f'{plot_save_path}/expand={expand}.png')
         plt.close()
 
         test_loss = RMSE(true_labels, predictions)
@@ -175,7 +174,7 @@ for dataset_name, dataset in processed_data.items():
             'RIC': [ric_test]
         }
         results_df = pd.DataFrame(results)
-        excel_save_path = f'{plot_save_path}/{dataset_name}_{hidden_dimention}.xlsx'
+        excel_save_path = f'{plot_save_path}/{dataset_name}_{expand}.xlsx'
         results_df.to_excel(excel_save_path, index=False)
 
 
